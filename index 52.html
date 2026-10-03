@@ -1,0 +1,3290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#075b9d">
+<title>PROD App</title>
+<style>
+:root{
+  --blue:#075b9d;
+  --blue2:#0a6cba;
+  --pale:#dcebf7;
+  --yellow:#fff0a3;
+  --green:#16822b;
+  --red:#b51f32;
+  --ink:#111827;
+  --muted:#6b7280;
+  --bg:#f4f6f8;
+  --card:#fff;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;min-height:100%;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);color:var(--ink)
+}
+button,input{font:inherit}
+button{touch-action:manipulation}
+.app{min-height:100dvh;display:flex;flex-direction:column}
+.topbar{
+  position:sticky;top:0;z-index:20;
+  background:var(--blue);color:#fff;
+  padding:calc(10px + env(safe-area-inset-top)) 14px 10px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:0 2px 8px #0002;
+}
+.brand{font-size:22px;font-weight:950;letter-spacing:.2px}
+.top-right{display:flex;align-items:center;gap:9px}
+.top-meta{font-size:11px;font-weight:850;opacity:.95;text-align:right;line-height:1.2}
+.top-overview{
+  border:1px solid #ffffffaa;background:#fff;color:var(--blue);
+  min-height:38px;padding:8px 12px;border-radius:10px;
+  font-weight:950;font-size:13px
+}
+.top-overview[hidden]{display:none}
+.main{
+  width:min(620px,100%);margin:0 auto;flex:1;
+  padding:18px 14px calc(26px + env(safe-area-inset-bottom))
+}
+.screen{display:none}
+.screen.active{display:block}
+.progress{
+  font-size:12px;font-weight:950;color:var(--blue);
+  margin:2px 2px 10px;text-transform:uppercase;letter-spacing:.65px;
+}
+.card{
+  background:var(--card);border-radius:18px;
+  box-shadow:0 5px 20px #0001;padding:18px
+}
+h1{font-size:28px;line-height:1.1;margin:0 0 8px}
+.lead{margin:0 0 18px;color:var(--muted);font-size:15px}
+.field-group{margin:0 0 14px}
+label{display:block;font-size:15px;font-weight:950;margin:0 0 7px}
+input{
+  width:100%;min-height:54px;border:2px solid #cfd6dd;border-radius:12px;
+  padding:10px 12px;background:#fff;text-align:center;
+  font-size:22px;font-weight:900;outline:none
+}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #075b9d20}
+.optional-block{
+  margin:20px 0 4px;padding-top:16px;border-top:1px solid #e5e7eb
+}
+.optional-title{
+  font-size:13px;font-weight:950;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px
+}
+.optional-note{font-size:12px;color:var(--muted);margin:-4px 0 12px}
+.error{
+  display:none;margin:10px 0;background:#fff1f1;color:var(--red);
+  border-radius:10px;padding:9px 10px;font-size:13px;font-weight:850
+}
+.error.show{display:block}
+input.required-invalid{
+  border-color:var(--red)!important;
+  background:#fff4f4!important;
+  box-shadow:0 0 0 3px rgba(181,31,50,.12)!important;
+}
+.primary,.secondary,.danger{
+  border:0;border-radius:12px;min-height:52px;
+  padding:12px 16px;font-weight:950;font-size:16px
+}
+.primary{background:var(--blue);color:#fff}
+.secondary{background:#e8edf2;color:#111827}
+.danger{background:#fff0f0;color:var(--red)}
+.full{width:100%}
+
+/* Home */
+.home-intro{margin-bottom:14px}
+.home-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:13px
+}
+.home-card{
+  position:relative;
+  border:0;border-radius:18px;background:#fff;
+  box-shadow:0 5px 20px #0001;padding:21px 10px;
+  text-align:center;min-height:150px
+}
+.complete-tick{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:var(--green);
+  color:#fff;
+  font-size:17px;
+  line-height:1;
+  font-weight:950;
+  box-shadow:0 2px 7px #0002;
+}
+.home-card.complete .complete-tick{display:flex}
+.home-card.actual{border-top:6px solid var(--blue)}
+.home-card.planned{border-top:6px solid #9aa7b3}
+.home-card strong{
+  display:block;font-size:22px;color:var(--blue);
+  margin-bottom:9px;line-height:1.05
+}
+.home-card.planned strong{color:#465565}
+.home-card .home-total{
+  display:block;font-size:13px;font-weight:850;color:var(--muted)
+}
+.home-card .home-status{
+  display:block;margin-top:9px;font-size:12px;font-weight:900;color:var(--green)
+}
+.home-kpi-panel{
+  margin-top:15px;
+  background:#fff;
+  border-radius:18px;
+  box-shadow:0 5px 20px #0001;
+  padding:14px;
+}
+.home-kpi-title{
+  font-size:12px;
+  font-weight:950;
+  color:var(--blue);
+  text-transform:uppercase;
+  letter-spacing:.65px;
+  margin:0 0 10px;
+}
+.home-kpi-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.home-kpi-item{
+  min-height:76px;
+  border:1px solid #e5e7eb;
+  border-radius:13px;
+  padding:10px 11px;
+  background:#f8fafc;
+}
+.home-kpi-item small{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.35px;
+}
+.home-kpi-value{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-top:6px;
+  font-size:23px;
+  font-weight:950;
+}
+.diff-sign{
+  min-width:28px;
+  height:28px;
+  border-radius:9px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:19px;
+  font-weight:950;
+}
+.good-value{color:var(--green)}
+.bad-value{color:var(--red)}
+.neutral-value{color:var(--ink)}
+.good-sign{background:var(--green)}
+.bad-sign{background:var(--red)}
+.neutral-sign{background:#94a3b8}
+.home-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.home-secondary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+
+/* Figure entry */
+.section-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:10px;margin-bottom:14px
+}
+.section-title{font-size:31px;font-weight:950;line-height:1;margin:0}
+.section-kicker{
+  font-size:11px;color:var(--blue);font-weight:950;
+  text-transform:uppercase;letter-spacing:.65px;margin-bottom:5px
+}
+.week-total{font-size:15px;font-weight:850;color:var(--muted);margin-top:7px}
+.week-total strong{color:var(--ink);font-size:20px}
+.small-back{
+  border:0;background:#e8edf2;border-radius:10px;
+  min-height:38px;padding:8px 11px;font-size:13px;font-weight:900
+}
+.import-btn{
+  border:0;background:#e8f5e9;color:var(--green);
+  border-radius:10px;min-height:38px;padding:8px 12px;
+  font-size:13px;font-weight:950;white-space:nowrap
+}
+.section-head-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.day-list{display:grid;gap:9px}
+.day-row{
+  display:grid;grid-template-columns:1fr minmax(130px,45%);
+  align-items:center;gap:12px;background:#f8fafc;
+  border:1px solid #e5e7eb;border-radius:14px;padding:9px 11px;
+  transition:.16s ease
+}
+.day-row label{
+  margin:0;
+  font-size:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  width:100%;
+}
+.entry-day-date{
+  font-size:13px;
+  font-weight:900;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.day-row input{min-height:48px;font-size:20px;background:#fff}
+.day-row.completed label::after{
+  content:"  ✓";color:var(--green);font-weight:950
+}
+.day-row.focus-day{
+  padding:16px 13px;border:3px solid var(--blue);
+  background:#eef7ff;box-shadow:0 5px 18px #075b9d22;
+  transform:scale(1.015)
+}
+.day-row.focus-day label{
+  font-size:21px;color:var(--blue)
+}
+.day-row.focus-day .entry-day-date{
+  font-size:14px;
+  color:var(--blue);
+}
+.day-row.focus-day label::after{
+  content:"  NEXT";font-size:10px;vertical-align:middle;
+  color:#fff;background:var(--blue);border-radius:999px;
+  padding:4px 7px;margin-left:5px
+}
+.day-row.focus-day input{
+  min-height:62px;font-size:27px;border-color:var(--blue)
+}
+.bottom-nav{display:grid;gap:10px;margin-top:16px}
+.bottom-nav.two{grid-template-columns:1fr 1fr}
+.switch-btn{
+  border:2px solid var(--blue);background:#fff;color:var(--blue);
+  border-radius:14px;min-height:56px;font-size:17px;font-weight:950
+}
+.done-btn{
+  border:0;background:var(--blue);color:#fff;border-radius:14px;
+  min-height:56px;font-size:17px;font-weight:950
+}
+.hint{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
+
+/* Exact KPI sheet appearance taken from the supplied KPI HTML */
+.capture-host{
+  position:fixed;
+  left:-14000px;
+  top:0;
+  width:1080px;
+  padding:0 12px;
+  box-sizing:border-box;
+  background:#f4f4f4;
+  z-index:-10;
+  pointer-events:none;
+}
+#capture{
+  width:100%;
+  background:white;
+  border:1px solid #999;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  color:var(--ink);
+}
+#capture .title{
+  background:var(--blue);
+  color:#fff;
+  text-align:center;
+  font-size:26px;
+  font-weight:800;
+  padding:8px;
+}
+#capture .meta{
+  display:grid;
+  grid-template-columns:150px 1fr 140px 1fr;
+  background:var(--pale);
+  font-weight:700;
+  align-items:center;
+}
+#capture .meta>div{padding:8px 5px}
+#capture .entry{background:var(--yellow)!important}
+#capture .field{
+  width:100%;
+  min-height:24px;
+  border:0;
+  background:transparent;
+  text-align:center;
+  font:inherit;
+  font-weight:600;
+  outline:none;
+  padding:3px;
+  white-space:nowrap;
+}
+#capture table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+}
+#capture th,
+#capture td{
+  text-align:center;
+  padding:8px 4px;
+}
+#capture thead th{background:var(--pale)}
+#capture thead tr:first-child th{
+  font-size:14px;
+  padding-bottom:3px;
+}
+#capture thead tr:last-child th{
+  font-size:13px;
+  padding-top:3px;
+}
+#capture .day{
+  font-weight:500;
+  text-align:right;
+  padding-right:7px;
+  white-space:nowrap;
+  overflow:hidden;
+}
+#capture .day .week-date{
+  font-weight:900;
+  margin-left:5px;
+  white-space:nowrap;
+}
+#capture .day[data-day-index]{border-right:3px solid var(--blue)}
+#capture #kpiTable col{width:14.2857%}
+#capture #kpiTable.dates-mode .day[data-day-index]{font-size:15px}
+#capture tbody tr.total td{
+  background:var(--pale);
+  font-weight:800;
+}
+#capture .total .day{text-align:left}
+#capture .actual-input{background:var(--yellow)}
+#capture .delta.good{color:var(--green)}
+#capture .delta.bad{color:var(--red)}
+#capture .kpis{
+  display:grid;
+  grid-template-columns:0 0 1fr 72px 1fr;
+}
+#capture .kpis.legacy-enabled{
+  grid-template-columns:1fr 28px 1fr 28px 1fr;
+}
+#capture .kpi{
+  display:grid;
+  grid-template-rows:31px 44px 31px 44px;
+  min-width:0;
+}
+#capture .kpi h3{
+  margin:0;
+  background:var(--blue);
+  color:#fff;
+  text-align:center;
+  font-size:14px;
+  padding:7px;
+  white-space:nowrap;
+  overflow:hidden;
+}
+#capture .kpi .value{
+  background:var(--yellow);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  min-width:0;
+}
+#capture .kpi-spacer{
+  background:#fff;
+  min-width:0;
+}
+#capture #legacyKpi{
+  overflow:hidden;
+  display:grid;
+  grid-template-rows:31px 44px 31px 44px;
+}
+#capture .legacy-slot{
+  display:grid;
+  grid-template-rows:31px 44px;
+  min-width:0;
+  visibility:visible;
+}
+#capture #cirSlot{grid-row:1 / 3}
+#capture #woSlot{grid-row:3 / 5}
+#capture .legacy-slot.hidden{visibility:hidden}
+#capture .legacy-slot h3{
+  margin:0;
+  background:var(--blue);
+  color:#fff;
+  text-align:center;
+  font-size:14px;
+  padding:7px;
+  white-space:nowrap;
+  overflow:hidden;
+}
+#capture .legacy-slot .value{
+  background:var(--yellow);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  min-width:0;
+}
+#capture .optional-slot.hidden{
+  visibility:hidden;
+}
+
+/* Overview copied from the uploaded KPI app: render the sheet to an image,
+   then show only that image against black and rotate the overview card on phones. */
+#overviewModal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:2147483646;
+  background:#111;
+  padding:0;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+#overviewModal.show{display:flex}
+#overviewCard{
+  position:relative;
+  background:#111;
+  width:100vw;
+  height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  pointer-events:none;
+}
+#overviewClose{
+  position:fixed;
+  right:max(18px,env(safe-area-inset-right));
+  top:max(18px,env(safe-area-inset-top));
+  z-index:2147483647;
+  pointer-events:auto;
+  touch-action:manipulation;
+  -webkit-user-select:none;
+  user-select:none;
+  width:60px;
+  height:60px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  font-size:36px;
+  line-height:60px;
+  background:#fff;
+  color:#111;
+  box-shadow:0 3px 14px #0008;
+}
+#overviewImage{
+  pointer-events:none;
+  display:block;
+  width:auto;
+  height:auto;
+  max-width:94vw;
+  max-height:92dvh;
+  object-fit:contain;
+  border-radius:4px;
+}
+#overviewModal.force-landscape #overviewCard{
+  width:100dvh;
+  height:100vw;
+  transform:rotate(90deg);
+}
+#overviewModal.force-landscape #overviewImage{
+  width:auto;
+  height:auto;
+  max-width:94dvh;
+  max-height:92vw;
+  object-fit:contain;
+  border-radius:4px;
+}
+
+@media(max-width:420px){
+  h1{font-size:25px}
+  .section-title{font-size:28px}
+  .main{padding-left:10px;padding-right:10px}
+  .day-row{grid-template-columns:1fr 145px}
+  .home-card strong{font-size:20px}
+}
+
+/* Hidden PROD MTD widget copied from the supplied KPI app */
+#prodMtdSetupTitle{
+  touch-action:manipulation;
+  -webkit-user-select:none;
+  user-select:none;
+}
+#prodWidgetModal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:2147483647;
+  background:rgba(0,0,0,.58);
+  padding:18px;
+  align-items:center;
+  justify-content:center;
+}
+#prodWidgetModal.show{display:flex}
+#prodWidgetCard{
+  position:relative;
+  width:min(390px,100%);
+  background:#fff;
+  border-radius:16px;
+  padding:54px 18px 18px;
+  box-shadow:0 8px 30px #0006;
+}
+#prodWidgetCard h3{
+  margin:0 0 16px;
+  text-align:center;
+  font-size:21px;
+  color:var(--ink);
+}
+#prodWidgetClose{
+  position:absolute;
+  right:10px;
+  top:8px;
+  width:40px;
+  height:40px;
+  padding:0;
+  border-radius:50%;
+  font-size:27px;
+  line-height:40px;
+}
+.prod-widget-grid{
+  display:grid;
+  grid-template-columns:44px 1fr 1fr;
+  gap:8px;
+  align-items:center;
+}
+.prod-widget-grid .hdr{
+  font-size:12px;
+  font-weight:800;
+  color:#666;
+  text-align:center;
+}
+.prod-widget-grid .n{
+  font-size:13px;
+  font-weight:800;
+  text-align:center;
+  color:#666;
+}
+.prod-widget-grid input{
+  width:100%;
+  min-height:42px;
+  border:1px solid #aaa;
+  border-radius:9px;
+  padding:7px 8px;
+  text-align:right;
+  font:inherit;
+  font-size:16px;
+  font-weight:700;
+  background:var(--yellow);
+  outline:none;
+}
+.prod-widget-grid input:focus{box-shadow:0 0 0 3px #1687e8}
+.prod-widget-total{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+.prod-widget-totalbox{
+  background:var(--pale);
+  border-radius:10px;
+  padding:9px 10px;
+}
+.prod-widget-totalbox small{
+  display:block;
+  font-size:10px;
+  font-weight:800;
+  color:#666;
+  text-transform:uppercase;
+}
+.prod-widget-totalbox strong{
+  display:block;
+  text-align:right;
+  font-size:18px;
+  margin-top:2px;
+}
+#widgetManualProdWrap{
+  margin-top:8px;
+  background:var(--pale);
+  border-radius:10px;
+  padding:9px 10px;
+}
+#widgetManualProdWrap small{
+  display:block;
+  font-size:10px;
+  font-weight:800;
+  color:#666;
+  text-transform:uppercase;
+}
+#widgetManualProd{
+  font-size:22px;
+  font-weight:900;
+  text-align:right;
+  margin-top:2px;
+}
+.prod-widget-editbar{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  margin:0 0 12px;
+}
+.prod-widget-editbar button{
+  min-height:40px;
+  padding:8px 6px;
+  font-size:13px;
+}
+.prod-widget-editbar button:disabled{opacity:.45}
+#deleteWidgetProdField{background:#e4e4e7;color:#111}
+#widgetProdTargetWrap{
+  display:grid;
+  grid-template-columns:1fr 145px;
+  gap:10px;
+  align-items:center;
+  margin-top:10px;
+}
+#widgetProdTargetWrap label{
+  font-size:13px;
+  font-weight:800;
+}
+#widgetProdTarget{
+  width:100%;
+  min-height:42px;
+  border:1px solid #aaa;
+  border-radius:9px;
+  padding:7px 8px;
+  text-align:right;
+  font:inherit;
+  font-size:16px;
+  font-weight:700;
+  background:var(--yellow);
+  outline:none;
+}
+#widgetProdTarget:focus{box-shadow:0 0 0 3px #1687e8}
+#widgetHoursSaveWrap{
+  margin-top:10px;
+  border-top:1px solid #ccc;
+  padding-top:10px;
+}
+#widgetHoursSaveWrap small{
+  display:block;
+  font-size:10px;
+  font-weight:800;
+  color:#666;
+  text-transform:uppercase;
+}
+#widgetHoursSave{
+  font-size:24px;
+  font-weight:900;
+  text-align:right;
+  margin-top:2px;
+}
+.prod-widget-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  margin-top:14px;
+}
+#grandTotalWidgetProd{background:#16822b;color:#fff}
+#saveWidgetProd{background:var(--blue);color:#fff}
+#clearWidgetProd{background:#e4e4e7;color:#111}
+
+
+/* Hidden screenshot importer for Planned Units / Planned Hours */
+#planUnitsTitle,#planHoursTitle{
+  touch-action:manipulation;
+  -webkit-user-select:none;
+  user-select:none;
+}
+#planImportModal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:2147483647;
+  background:rgba(0,0,0,.62);
+  padding:16px;
+  align-items:center;
+  justify-content:center;
+}
+#planImportModal.show{display:flex}
+#planImportCard{
+  position:relative;
+  width:min(520px,100%);
+  max-height:92dvh;
+  overflow:auto;
+  background:#fff;
+  border-radius:18px;
+  padding:54px 16px 18px;
+  box-shadow:0 10px 35px #0007;
+}
+#planImportClose{
+  position:absolute;
+  right:10px;
+  top:8px;
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  font-size:27px;
+  line-height:42px;
+  padding:0;
+}
+#planImportCard h3{
+  margin:0 0 6px;
+  text-align:center;
+  font-size:22px;
+}
+#planImportHint{
+  margin:0 0 14px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
+#importImageInput{
+  width:100%;
+  margin:0 0 10px;
+  font-size:14px;
+}
+#importReadBtn{
+  width:100%;
+  min-height:48px;
+  border:0;
+  border-radius:12px;
+  background:var(--blue);
+  color:#fff;
+  font-weight:950;
+}
+#importProgress{
+  min-height:22px;
+  margin:10px 0 4px;
+  text-align:center;
+  font-size:13px;
+  font-weight:850;
+  color:var(--muted);
+}
+#importPreview{
+  display:none;
+  width:100%;
+  max-height:180px;
+  object-fit:contain;
+  border-radius:10px;
+  border:1px solid #ddd;
+  margin:8px 0 12px;
+  background:#f8fafc;
+}
+#importPreview.show{display:block}
+#importConfirmWrap{display:none}
+#importConfirmWrap.show{display:block}
+.import-two-col{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.import-section{
+  border:1px solid #e3e7eb;
+  border-radius:12px;
+  padding:10px;
+}
+.import-section h4{
+  margin:0 0 8px;
+  text-align:center;
+  color:var(--blue);
+  font-size:14px;
+}
+.import-row{
+  display:grid;
+  grid-template-columns:1fr 1.2fr;
+  gap:7px;
+  align-items:center;
+  margin:6px 0;
+}
+.import-row span{
+  font-size:12px;
+  font-weight:850;
+}
+.import-row input{
+  min-height:38px;
+  padding:5px 7px;
+  font-size:15px;
+  text-align:right;
+  border:1px solid #bbb;
+  border-radius:8px;
+}
+.import-row input.import-check{
+  border-color:var(--red)!important;
+  background:#fff4f4!important;
+  box-shadow:0 0 0 2px rgba(181,31,50,.10);
+}
+#importConfirmBtn{
+  width:100%;
+  min-height:50px;
+  margin-top:12px;
+  border:0;
+  border-radius:12px;
+  background:var(--green);
+  color:#fff;
+  font-weight:950;
+}
+#importCancelBtn{
+  width:100%;
+  min-height:44px;
+  margin-top:8px;
+  border:0;
+  border-radius:12px;
+  background:#e8edf2;
+  color:#111827;
+  font-weight:900;
+}
+@media(max-width:430px){
+  .import-two-col{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">PROD</div>
+    <div class="top-right">
+      <div class="top-meta" id="topMeta">New setup</div>
+      <button class="top-overview" id="topOverview">Overview</button>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <section class="screen active" id="setupScreen">
+      <div class="progress">Setup</div>
+      <div class="card">
+        <h1>Start a KPI week</h1>
+        <p class="lead">Enter the week details first.</p>
+
+        <div class="field-group">
+          <label for="storeInput">Store number</label>
+          <input id="storeInput" inputmode="numeric" autocomplete="off" placeholder="" maxlength="4">
+        </div>
+
+        <div class="field-group">
+          <label for="weekInput">Week number</label>
+          <input id="weekInput" inputmode="numeric" autocomplete="off" placeholder="" maxlength="2">
+        </div>
+
+        <div class="field-group">
+          <label for="targetInput">Prod target</label>
+          <input id="targetInput" inputmode="decimal" autocomplete="off" placeholder="">
+        </div>
+
+        <div class="error" id="setupError"></div>
+        <button class="primary full" id="setupDone">Done</button>
+
+        <div class="optional-block">
+          <div class="optional-title">Optional</div>
+          <div class="optional-note">Leave any of these blank if you don't want them on the spreadsheet.</div>
+
+          <div class="field-group">
+            <label for="mtdInput" id="prodMtdSetupTitle">PROD MTD</label>
+            <input id="mtdInput" inputmode="decimal" autocomplete="off" placeholder="Optional">
+          </div>
+
+          <div class="field-group">
+            <label for="ytdInput">PROD YTD</label>
+            <input id="ytdInput" inputmode="decimal" autocomplete="off" placeholder="Optional">
+          </div>
+
+          <div class="field-group">
+            <label for="cirInput">CIR</label>
+            <input id="cirInput" inputmode="decimal" autocomplete="off" placeholder="Optional">
+          </div>
+
+          <div class="field-group">
+            <label for="woInput">W/O WTD</label>
+            <input id="woInput" inputmode="decimal" autocomplete="off" placeholder="Optional">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="screen" id="homeScreen">
+      <div class="progress">Home</div>
+
+      <div class="card home-intro">
+        <h1>Week <span id="homeWeek"></span></h1>
+        <p class="lead" style="margin-bottom:0">Choose what you want to update.</p>
+      </div>
+
+      <div class="home-grid">
+        <button class="home-card actual" id="homeActualUnits">
+          <span class="complete-tick" aria-hidden="true">✓</span>
+          <strong>Actual<br>Units</strong>
+          <span class="home-total" id="homeActualUnitsTotal">Weekly total: 0</span>
+          <span class="home-status" id="homeActualUnitsStatus"></span>
+        </button>
+
+        <button class="home-card actual" id="homeActualHours">
+          <span class="complete-tick" aria-hidden="true">✓</span>
+          <strong>Actual<br>Hours</strong>
+          <span class="home-total" id="homeActualHoursTotal">Weekly total: 0</span>
+          <span class="home-status" id="homeActualHoursStatus"></span>
+        </button>
+
+        <button class="home-card planned" id="homePlanUnits">
+          <span class="complete-tick" aria-hidden="true">✓</span>
+          <strong>Planned<br>Units</strong>
+          <span class="home-total" id="homePlanUnitsTotal">Weekly total: 0</span>
+        </button>
+
+        <button class="home-card planned" id="homePlanHours">
+          <span class="complete-tick" aria-hidden="true">✓</span>
+          <strong>Planned<br>Hours</strong>
+          <span class="home-total" id="homePlanHoursTotal">Weekly total: 0</span>
+        </button>
+      </div>
+
+      <div class="home-kpi-panel">
+        <div class="home-kpi-title">Live performance</div>
+        <div class="home-kpi-grid">
+          <div class="home-kpi-item">
+            <small>Prod Plan</small>
+            <div class="home-kpi-value neutral-value" id="homeProdPlan">—</div>
+          </div>
+
+          <div class="home-kpi-item">
+            <small>Prod Actual</small>
+            <div class="home-kpi-value neutral-value" id="homeProdActual">—</div>
+          </div>
+
+          <div class="home-kpi-item">
+            <small>Units Difference WTD</small>
+            <div class="home-kpi-value neutral-value">
+              <span class="diff-sign neutral-sign" id="unitsDiffSign">±</span>
+              <span id="homeUnitsDiff">—</span>
+            </div>
+          </div>
+
+          <div class="home-kpi-item">
+            <small>Hours Difference WTD</small>
+            <div class="home-kpi-value neutral-value">
+              <span class="diff-sign neutral-sign" id="hoursDiffSign">±</span>
+              <span id="homeHoursDiff">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="home-actions">
+        <button class="primary" id="homeOverview">Overview</button>
+        <button class="primary" id="homePublish">Publish</button>
+      </div>
+      <div class="home-secondary">
+        <button class="secondary" id="editSetup">Week setup</button>
+        <button class="danger" id="homeReset">Reset</button>
+      </div>
+    </section>
+
+    <section class="screen" id="planUnitsScreen">
+      <div class="progress">Planned figures</div>
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">Plan</div>
+            <h1 class="section-title" id="planUnitsTitle">Units</h1>
+            <div class="week-total">Weekly total: <strong id="planUnitsTotal">0</strong></div>
+          </div>
+          <div class="section-head-actions">
+            <button class="small-back" data-home>Home</button>
+            <button class="import-btn" id="planUnitsImport">Import</button>
+          </div>
+        </div>
+
+        <div class="day-list" id="planUnitsDays"></div>
+
+        <div class="bottom-nav two">
+          <button class="done-btn" id="planUnitsDone">Done</button>
+          <button class="switch-btn" id="toPlanHours">Hours</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="planHoursScreen">
+      <div class="progress">Planned figures</div>
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">Plan</div>
+            <h1 class="section-title" id="planHoursTitle">Hours</h1>
+            <div class="week-total">Weekly total: <strong id="planHoursTotal">0</strong></div>
+          </div>
+          <div class="section-head-actions">
+            <button class="small-back" data-home>Home</button>
+            <button class="import-btn" id="planHoursImport">Import</button>
+          </div>
+        </div>
+
+        <div class="day-list" id="planHoursDays"></div>
+
+        <div class="bottom-nav two">
+          <button class="switch-btn" id="toPlanUnits">Units</button>
+          <button class="done-btn" id="planHoursDone">Done</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="actualUnitsScreen">
+      <div class="progress">Actual figures</div>
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">Actual</div>
+            <h1 class="section-title">Units</h1>
+            <div class="week-total">Weekly total: <strong id="actualUnitsTotal">0</strong></div>
+          </div>
+          <button class="small-back" data-home>Home</button>
+        </div>
+
+        <div class="day-list" id="actualUnitsDays"></div>
+
+        <div class="bottom-nav two">
+          <button class="done-btn" id="actualUnitsDone">Done</button>
+          <button class="switch-btn" id="toActualHours">Actual Hours</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="actualHoursScreen">
+      <div class="progress">Actual figures</div>
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">Actual</div>
+            <h1 class="section-title">Hours</h1>
+            <div class="week-total">Weekly total: <strong id="actualHoursTotal">0</strong></div>
+          </div>
+          <button class="small-back" data-home>Home</button>
+        </div>
+
+        <div class="day-list" id="actualHoursDays"></div>
+
+        <div class="bottom-nav two">
+          <button class="switch-btn" id="toActualUnits">Actual Units</button>
+          <button class="done-btn" id="actualHoursDone">Done</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+
+<div id="prodWidgetModal" aria-hidden="true">
+  <div id="prodWidgetCard">
+    <button id="prodWidgetClose" aria-label="Close widget prod">×</button>
+    <h3>Widget Prod</h3>
+
+    <div class="prod-widget-editbar">
+      <button id="undoWidgetProd" disabled>Undo</button>
+      <button id="redoWidgetProd" disabled>Redo</button>
+      <button id="deleteWidgetProdField">Delete</button>
+    </div>
+
+    <div class="prod-widget-grid">
+      <div></div><div class="hdr">Units</div><div class="hdr">Hours</div>
+      <div class="n">1</div><input class="widget-units-part" inputmode="decimal" autocomplete="off" placeholder="0"><input class="widget-hours-part" inputmode="decimal" autocomplete="off" placeholder="0">
+      <div class="n">2</div><input class="widget-units-part" inputmode="decimal" autocomplete="off" placeholder="0"><input class="widget-hours-part" inputmode="decimal" autocomplete="off" placeholder="0">
+      <div class="n">3</div><input class="widget-units-part" inputmode="decimal" autocomplete="off" placeholder="0"><input class="widget-hours-part" inputmode="decimal" autocomplete="off" placeholder="0">
+      <div class="n">4</div><input class="widget-units-part" inputmode="decimal" autocomplete="off" placeholder="0"><input class="widget-hours-part" inputmode="decimal" autocomplete="off" placeholder="0">
+    </div>
+
+    <div class="prod-widget-total">
+      <div class="prod-widget-totalbox"><small>Total Units</small><strong id="widgetTotalUnitsDisplay">—</strong></div>
+      <div class="prod-widget-totalbox"><small>Total Hours</small><strong id="widgetTotalHoursDisplay">—</strong></div>
+    </div>
+
+    <div id="widgetManualProdWrap"><small>Prod</small><div id="widgetManualProd">—</div></div>
+
+    <div id="widgetProdTargetWrap">
+      <label for="widgetProdTarget">Prod Target</label>
+      <input id="widgetProdTarget" inputmode="decimal" autocomplete="off" placeholder="0">
+    </div>
+
+    <div id="widgetHoursSaveWrap">
+      <small>Hours to Save</small>
+      <div id="widgetHoursSave">—</div>
+    </div>
+
+    <div class="prod-widget-actions">
+      <button id="clearWidgetProd">Clear</button>
+      <button id="grandTotalWidgetProd">Grand Total</button>
+      <button id="saveWidgetProd">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="planImportModal" aria-hidden="true">
+  <div id="planImportCard">
+    <button id="planImportClose" aria-label="Close import">×</button>
+    <h3 id="planImportTitle">Import Plan</h3>
+    <p id="planImportHint">Upload a screenshot of the spreadsheet that shows the <strong>Manager Adjust</strong> column(s). The app will try to read both Planned Units and Planned Hours.</p>
+
+    <input id="importImageInput" type="file" accept="image/*">
+    <img id="importPreview" alt="Selected screenshot preview">
+    <button id="importReadBtn">Read Screenshot</button>
+    <div id="importProgress"></div>
+
+    <div id="importConfirmWrap">
+      <div class="import-two-col">
+        <div class="import-section">
+          <h4>Planned Units</h4>
+          <div class="import-row"><span>Monday</span><input class="import-unit" data-day="Monday" inputmode="numeric"></div>
+<div class="import-row"><span>Tuesday</span><input class="import-unit" data-day="Tuesday" inputmode="numeric"></div>
+<div class="import-row"><span>Wednesday</span><input class="import-unit" data-day="Wednesday" inputmode="numeric"></div>
+<div class="import-row"><span>Thursday</span><input class="import-unit" data-day="Thursday" inputmode="numeric"></div>
+<div class="import-row"><span>Friday</span><input class="import-unit" data-day="Friday" inputmode="numeric"></div>
+<div class="import-row"><span>Saturday</span><input class="import-unit" data-day="Saturday" inputmode="numeric"></div>
+<div class="import-row"><span>Sunday</span><input class="import-unit" data-day="Sunday" inputmode="numeric"></div>
+        </div>
+        <div class="import-section">
+          <h4>Planned Hours</h4>
+          <div class="import-row"><span>Monday</span><input class="import-hour" data-day="Monday" inputmode="decimal"></div>
+<div class="import-row"><span>Tuesday</span><input class="import-hour" data-day="Tuesday" inputmode="decimal"></div>
+<div class="import-row"><span>Wednesday</span><input class="import-hour" data-day="Wednesday" inputmode="decimal"></div>
+<div class="import-row"><span>Thursday</span><input class="import-hour" data-day="Thursday" inputmode="decimal"></div>
+<div class="import-row"><span>Friday</span><input class="import-hour" data-day="Friday" inputmode="decimal"></div>
+<div class="import-row"><span>Saturday</span><input class="import-hour" data-day="Saturday" inputmode="decimal"></div>
+<div class="import-row"><span>Sunday</span><input class="import-hour" data-day="Sunday" inputmode="decimal"></div>
+        </div>
+      </div>
+
+      <button id="importConfirmBtn">Confirm & Import</button>
+      <button id="importCancelBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="capture-host" aria-hidden="true">
+  <section id="capture">
+    <div class="title">KPIs</div>
+
+    <div class="meta">
+      <div>Store No:</div>
+      <div class="entry"><div class="field" id="store"></div></div>
+      <div>Week No:</div>
+      <div class="entry"><div class="field" id="week"></div></div>
+    </div>
+
+    <table id="kpiTable">
+      <colgroup><col><col><col><col><col><col><col></colgroup>
+      <thead>
+        <tr>
+          <th rowspan="2">Weekly Prod<br>Overview</th>
+          <th colspan="2">Units</th>
+          <th colspan="2">Total Hours</th>
+          <th colspan="2">Net Prod</th>
+        </tr>
+        <tr>
+          <th>Manager Adjust</th>
+          <th>Actual</th>
+          <th>Manager Adjust</th>
+          <th>Actual</th>
+          <th>Plan</th>
+          <th>Actual</th>
+        </tr>
+      </thead>
+
+      <tbody id="rows"></tbody>
+
+      <tbody>
+        <tr class="total">
+          <td class="day">Weekly Total</td>
+          <td id="planUnitsTotal"></td>
+          <td id="unitDelta" class="delta"></td>
+          <td id="planHoursTotal"></td>
+          <td id="hourDelta" class="delta"></td>
+          <td id="planProd"></td>
+          <td id="actualProd"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="kpis" id="kpiBottom">
+      <div class="kpi legacy-kpi" id="legacyKpi">
+        <div class="legacy-slot" id="cirSlot">
+          <h3>CIR</h3>
+          <div class="value"><div class="field" id="cir"></div></div>
+        </div>
+        <div class="legacy-slot" id="woSlot">
+          <h3>Write Offs WTD</h3>
+          <div class="value"><div class="field" id="wo"></div></div>
+        </div>
+      </div>
+
+      <div class="kpi-spacer" id="legacySpacer"></div>
+
+      <div class="kpi" id="mainOptionalKpi">
+        <h3 id="mtdTitle">Prod MTD</h3>
+        <div class="value optional-slot" id="mtdSlot"><div class="field" id="mtd"></div></div>
+        <h3 id="ytdTitle">Prod YTD</h3>
+        <div class="value optional-slot" id="ytdSlot"><div class="field" id="ytd"></div></div>
+      </div>
+
+      <div class="kpi-spacer" id="mainSpacer"></div>
+
+      <div class="kpi">
+        <h3>Target Prod</h3>
+        <div class="value"><div class="field" id="target"></div></div>
+        <h3>Hours to Save</h3>
+        <div class="value"><span id="hoursSave"></span></div>
+      </div>
+    </div>
+  </section>
+</div>
+<div id="overviewModal" aria-hidden="true">
+  <button id="overviewClose" type="button" aria-label="Close overview">×</button>
+  <div id="overviewCard">
+    <img id="overviewImage" alt="KPI table overview">
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const blankDays=()=>Object.fromEntries(DAYS.map(d=>[d,""]));
+
+const state={
+  store:"",
+  week:"",
+  target:"",
+  mtd:"",
+  ytd:"",
+  cir:"",
+  woWtd:"",
+  planUnits:blankDays(),
+  planHours:blankDays(),
+  actualUnits:blankDays(),
+  actualHours:blankDays(),
+  hasStartedPlan:false,
+  step:"setup"
+};
+
+const screens={
+  setup:document.getElementById("setupScreen"),
+  home:document.getElementById("homeScreen"),
+  planUnits:document.getElementById("planUnitsScreen"),
+  planHours:document.getElementById("planHoursScreen"),
+  actualUnits:document.getElementById("actualUnitsScreen"),
+  actualHours:document.getElementById("actualHoursScreen")
+};
+
+const storeInput=document.getElementById("storeInput");
+const weekInput=document.getElementById("weekInput");
+const targetInput=document.getElementById("targetInput");
+const mtdInput=document.getElementById("mtdInput");
+const ytdInput=document.getElementById("ytdInput");
+const cirInput=document.getElementById("cirInput");
+const woInput=document.getElementById("woInput");
+const setupError=document.getElementById("setupError");
+const topMeta=document.getElementById("topMeta");
+const topOverview=document.getElementById("topOverview");
+const overviewModal=document.getElementById("overviewModal");
+const overviewClose=document.getElementById("overviewClose");
+const overviewImage=document.getElementById("overviewImage");
+
+
+/* Hidden PROD MTD widget — same behaviour as the supplied KPI app */
+const prodMtdSetupTitle=document.getElementById("prodMtdSetupTitle"),
+      prodWidgetModal=document.getElementById("prodWidgetModal"),
+      prodWidgetClose=document.getElementById("prodWidgetClose"),
+      widgetUnitParts=[...document.querySelectorAll(".widget-units-part")],
+      widgetHourParts=[...document.querySelectorAll(".widget-hours-part")],
+      widgetTotalUnitsDisplay=document.getElementById("widgetTotalUnitsDisplay"),
+      widgetTotalHoursDisplay=document.getElementById("widgetTotalHoursDisplay"),
+      widgetManualProd=document.getElementById("widgetManualProd"),
+      widgetProdTarget=document.getElementById("widgetProdTarget"),
+      widgetHoursSave=document.getElementById("widgetHoursSave"),
+      saveWidgetProd=document.getElementById("saveWidgetProd"),
+      clearWidgetProd=document.getElementById("clearWidgetProd"),
+      grandTotalWidgetProd=document.getElementById("grandTotalWidgetProd"),
+      undoWidgetProd=document.getElementById("undoWidgetProd"),
+      redoWidgetProd=document.getElementById("redoWidgetProd"),
+      deleteWidgetProdField=document.getElementById("deleteWidgetProdField");
+
+let widgetProdSettings={
+  unitParts:["","","",""],
+  hourParts:["","","",""],
+  units:null,
+  hours:null,
+  prod:null,
+  target:null,
+  hoursSave:null
+};
+
+try{
+  const saved=JSON.parse(localStorage.getItem("kpiWidgetProdSettings")||"null");
+  if(saved&&typeof saved==="object"){
+    if(Array.isArray(saved.unitParts)&&Array.isArray(saved.hourParts)){
+      widgetProdSettings=saved;
+    }else{
+      widgetProdSettings={
+        unitParts:[saved.units??"","","",""],
+        hourParts:[saved.hours??"","","",""],
+        units:saved.units??null,
+        hours:saved.hours??null,
+        prod:saved.prod??null,
+        target:saved.target??null,
+        hoursSave:saved.hoursSave??null
+      };
+    }
+  }
+}catch(e){}
+
+function parseWidgetNumber(v){
+  const n=parseFloat(String(v??"").replace(/,/g,""));
+  return Number.isFinite(n)?n:null;
+}
+
+const widgetProdInputs=()=>[
+  ...widgetUnitParts,
+  ...widgetHourParts,
+  widgetProdTarget
+];
+
+let widgetProdUndoStack=[],
+    widgetProdRedoStack=[],
+    widgetProdHistoryBusy=false,
+    widgetProdLastSnapshot="",
+    widgetProdActiveInput=null;
+
+function widgetProdSnapshot(){
+  return JSON.stringify(widgetProdInputs().map(i=>i.value));
+}
+
+function updateWidgetProdHistoryButtons(){
+  undoWidgetProd.disabled=!widgetProdUndoStack.length;
+  redoWidgetProd.disabled=!widgetProdRedoStack.length;
+}
+
+function applyWidgetProdSnapshot(snapshot){
+  widgetProdHistoryBusy=true;
+  const vals=JSON.parse(snapshot);
+  widgetProdInputs().forEach((i,n)=>i.value=vals[n]??"");
+  widgetProdHistoryBusy=false;
+  widgetProdLastSnapshot=snapshot;
+  calculateWidgetGrandTotal();
+  updateWidgetProdHistoryButtons();
+}
+
+function recordWidgetProdHistory(){
+  if(widgetProdHistoryBusy)return;
+  const now=widgetProdSnapshot();
+  if(widgetProdLastSnapshot&&now!==widgetProdLastSnapshot){
+    widgetProdUndoStack.push(widgetProdLastSnapshot);
+    if(widgetProdUndoStack.length>100)widgetProdUndoStack.shift();
+    widgetProdRedoStack=[];
+  }
+  widgetProdLastSnapshot=now;
+  updateWidgetProdHistoryButtons();
+}
+
+function totalWidgetParts(inputs){
+  let any=false,total=0;
+  inputs.forEach(i=>{
+    const n=parseWidgetNumber(i.value);
+    if(n!==null){
+      any=true;
+      total+=n;
+    }
+  });
+  return any?total:null;
+}
+
+function calculateWidgetGrandTotal(){
+  const u=totalWidgetParts(widgetUnitParts);
+  const h=totalWidgetParts(widgetHourParts);
+  const target=parseWidgetNumber(widgetProdTarget.value);
+  const p=(u!==null&&h!==null&&h>0)?u/h:null;
+  const hs=(u!==null&&h!==null&&target!==null&&target>0)
+    ?h-(u/target)
+    :null;
+
+  widgetTotalUnitsDisplay.textContent=u===null?"—":fmt(u,0);
+  widgetTotalHoursDisplay.textContent=h===null?"—":fmt(h,1);
+
+  widgetManualProd.textContent=p===null?"—":fmt(p,1);
+  widgetManualProd.style.color=
+    (p===null||target===null)
+      ?""
+      :(p>=target?"var(--green)":"var(--red)");
+
+  widgetHoursSave.textContent=
+    hs===null?"":`${hs>0?"+":""}${fmt(hs,1)}`;
+  widgetHoursSave.style.color=
+    hs===null?"":(hs<=0?"var(--green)":"var(--red)");
+
+  return {
+    unitParts:widgetUnitParts.map(i=>i.value.trim()),
+    hourParts:widgetHourParts.map(i=>i.value.trim()),
+    units:u,
+    hours:h,
+    prod:p,
+    target:target,
+    hoursSave:hs
+  };
+}
+
+function openProdWidgetSettings(){
+  const u=Array.isArray(widgetProdSettings.unitParts)
+    ?widgetProdSettings.unitParts
+    :["","","",""];
+  const h=Array.isArray(widgetProdSettings.hourParts)
+    ?widgetProdSettings.hourParts
+    :["","","",""];
+
+  widgetUnitParts.forEach((i,n)=>i.value=u[n]??"");
+  widgetHourParts.forEach((i,n)=>i.value=h[n]??"");
+  widgetProdTarget.value=widgetProdSettings.target??"";
+
+  widgetProdUndoStack=[];
+  widgetProdRedoStack=[];
+  widgetProdLastSnapshot=widgetProdSnapshot();
+  widgetProdActiveInput=null;
+
+  calculateWidgetGrandTotal();
+  updateWidgetProdHistoryButtons();
+
+  prodWidgetModal.classList.add("show");
+  prodWidgetModal.setAttribute("aria-hidden","false");
+}
+
+function closeProdWidgetSettings(){
+  prodWidgetModal.classList.remove("show");
+  prodWidgetModal.setAttribute("aria-hidden","true");
+}
+
+prodWidgetClose.onclick=closeProdWidgetSettings;
+
+widgetProdInputs().forEach(i=>{
+  i.addEventListener("focus",()=>{
+    widgetProdActiveInput=i;
+  });
+
+  i.addEventListener("input",()=>{
+    recordWidgetProdHistory();
+    calculateWidgetGrandTotal();
+  });
+});
+
+undoWidgetProd.onclick=()=>{
+  if(!widgetProdUndoStack.length)return;
+  const current=widgetProdSnapshot();
+  const previous=widgetProdUndoStack.pop();
+  widgetProdRedoStack.push(current);
+  applyWidgetProdSnapshot(previous);
+};
+
+redoWidgetProd.onclick=()=>{
+  if(!widgetProdRedoStack.length)return;
+  const current=widgetProdSnapshot();
+  const next=widgetProdRedoStack.pop();
+  widgetProdUndoStack.push(current);
+  applyWidgetProdSnapshot(next);
+};
+
+deleteWidgetProdField.onclick=()=>{
+  if(!widgetProdActiveInput){
+    alert("Tap a Units, Hours or Prod Target box first.");
+    return;
+  }
+
+  if(widgetProdActiveInput.value==="")return;
+
+  widgetProdActiveInput.value="";
+  widgetProdActiveInput.dispatchEvent(new Event("input",{bubbles:true}));
+  widgetProdActiveInput.focus();
+};
+
+grandTotalWidgetProd.onclick=()=>{
+  calculateWidgetGrandTotal();
+};
+
+saveWidgetProd.onclick=()=>{
+  widgetProdSettings=calculateWidgetGrandTotal();
+
+  try{
+    localStorage.setItem(
+      "kpiWidgetProdSettings",
+      JSON.stringify(widgetProdSettings)
+    );
+  }catch(e){}
+
+  // Same purpose as the original: save the calculated Prod into PROD MTD.
+  if(widgetProdSettings.prod!==null){
+    state.mtd=widgetProdSettings.prod.toFixed(1);
+    mtdInput.value=state.mtd;
+    save();
+  }
+
+  closeProdWidgetSettings();
+};
+
+clearWidgetProd.onclick=()=>{
+  const before=widgetProdSnapshot();
+  widgetProdInputs().forEach(i=>i.value="");
+  widgetProdLastSnapshot=before;
+  recordWidgetProdHistory();
+  calculateWidgetGrandTotal();
+};
+
+let prodMtdTapCount=0,
+    prodMtdTapTimer=null;
+
+prodMtdSetupTitle.addEventListener("pointerup",e=>{
+  if(e.pointerType==="mouse"&&e.button!==0)return;
+
+  prodMtdTapCount++;
+  clearTimeout(prodMtdTapTimer);
+
+  if(prodMtdTapCount>=3){
+    prodMtdTapCount=0;
+    openProdWidgetSettings();
+  }else{
+    prodMtdTapTimer=setTimeout(()=>{
+      prodMtdTapCount=0;
+    },700);
+  }
+});
+
+function save(){
+  localStorage.setItem("prodAppV3",JSON.stringify(state));
+}
+
+function load(){
+  try{
+    let saved=JSON.parse(localStorage.getItem("prodAppV3")||"null");
+
+    // Migrate the previous version so existing figures are not lost.
+    if(!saved){
+      const old=JSON.parse(localStorage.getItem("prodAppV2")||"null");
+      if(old){
+        saved={
+          ...old,
+          planUnits:old.units||blankDays(),
+          planHours:old.hours||blankDays(),
+          actualUnits:blankDays(),
+          actualHours:blankDays(),
+          hasStartedPlan:
+            Object.values(old.units||{}).some(v=>String(v).trim()!=="") ||
+            Object.values(old.hours||{}).some(v=>String(v).trim()!==""),
+          step:"home"
+        };
+      }
+    }
+
+    if(!saved||typeof saved!=="object")return;
+    Object.assign(state,saved);
+    state.planUnits={...blankDays(),...(saved.planUnits||{})};
+    state.planHours={...blankDays(),...(saved.planHours||{})};
+    state.actualUnits={...blankDays(),...(saved.actualUnits||{})};
+    state.actualHours={...blankDays(),...(saved.actualHours||{})};
+  }catch(e){}
+}
+
+function num(v){
+  const n=Number(String(v??"").replace(/,/g,""));
+  return Number.isFinite(n)?n:0;
+}
+
+function fmt(v,dec=0){
+  const n=Number(v);
+  if(!Number.isFinite(n))return "—";
+  return n.toLocaleString("en-GB",{
+    minimumFractionDigits:dec,
+    maximumFractionDigits:dec
+  });
+}
+
+function total(obj){
+  return DAYS.reduce((sum,d)=>sum+num(obj[d]),0);
+}
+
+function firstBlankDay(obj){
+  return DAYS.find(d=>String(obj[d]??"").trim()==="")||null;
+}
+
+function isWeekComplete(obj){
+  return DAYS.every(d=>String(obj[d]??"").trim()!=="");
+}
+
+function enteredDays(obj){
+  return DAYS.filter(d=>String(obj[d]??"").trim()!=="");
+}
+
+function totalForDays(obj,days){
+  return days.reduce((sum,d)=>sum+num(obj[d]),0);
+}
+
+function isUnitsType(type){
+  return type==="planUnits"||type==="actualUnits";
+}
+
+function formatUnitsInput(value){
+  const raw=String(value??"").replace(/\D/g,"");
+  if(!raw)return "";
+  return raw.replace(/\B(?=(\d{3})+(?!\d))/g,",");
+}
+
+function dayProd(unitsObj,hoursObj,day){
+  const u=num(unitsObj[day]),h=num(hoursObj[day]);
+  return h>0?u/h:null;
+}
+
+function mondayOfIsoWeek(year,week){
+  const jan4=new Date(Date.UTC(year,0,4));
+  const jan4IsoDay=jan4.getUTCDay()||7;
+  const monday=new Date(jan4);
+  monday.setUTCDate(jan4.getUTCDate()-(jan4IsoDay-1)+((week-1)*7));
+  return monday;
+}
+
+function dateForWeekDay(index){
+  const week=Number(state.week);
+  if(!Number.isInteger(week)||week<1||week>53)return "";
+  const year=new Date().getFullYear();
+  const monday=mondayOfIsoWeek(year,week);
+  const date=new Date(monday);
+  date.setUTCDate(monday.getUTCDate()+index);
+  const dd=String(date.getUTCDate()).padStart(2,"0");
+  const mm=String(date.getUTCMonth()+1).padStart(2,"0");
+  return `${dd}/${mm}`;
+}
+
+function updateInputDayDates(){
+  document.querySelectorAll(".entry-day-date").forEach(el=>{
+    const index=Number(el.dataset.dayIndex);
+    el.textContent=Number.isInteger(index)?dateForWeekDay(index):"";
+  });
+}
+
+function syncSetup(){
+  storeInput.value=state.store||"";
+  weekInput.value=state.week||"";
+  targetInput.value=state.target||"";
+  mtdInput.value=state.mtd||"";
+  ytdInput.value=state.ytd||"";
+  cirInput.value=state.cir||"";
+  woInput.value=state.woWtd||"";
+  updateInputDayDates();
+}
+
+function renderTop(){
+  topMeta.textContent=(state.store&&state.week)
+    ?`Store ${state.store} • Week ${state.week}`
+    :"New setup";
+}
+
+function showScreen(name){
+  Object.values(screens).forEach(s=>s.classList.remove("active"));
+  screens[name].classList.add("active");
+  state.step=name;
+  save();
+
+  // Home deliberately has no top Overview button.
+  topOverview.hidden=(name==="home");
+
+  renderTop();
+  renderAllTotals();
+  updateInputDayDates();
+
+  if(name==="home")renderHome();
+
+  window.scrollTo(0,0);
+
+  if(name==="actualUnits"){
+    highlightNextActual("actualUnitsDays","actualUnits");
+    focusNextActual("actualUnitsDays","actualUnits");
+  }
+
+  if(name==="actualHours"){
+    highlightNextActual("actualHoursDays","actualHours");
+    focusNextActual("actualHoursDays","actualHours");
+  }
+}
+
+function setRequiredInvalid(input,invalid){
+  input.classList.toggle("required-invalid",!!invalid);
+}
+
+function validateSetup(){
+  const store=storeInput.value.trim();
+  const week=weekInput.value.trim();
+  const target=targetInput.value.trim();
+  const mtd=mtdInput.value.trim();
+  const ytd=ytdInput.value.trim();
+  const cir=cirInput.value.trim();
+  const woWtd=woInput.value.trim();
+  const problems=[];
+
+  const storeInvalid=!/^\d{3,4}$/.test(store);
+  const weekInvalid=!/^\d{1,2}$/.test(week)||Number(week)<1||Number(week)>53;
+  const targetInvalid=!target||!Number.isFinite(Number(target))||Number(target)<=0;
+
+  setRequiredInvalid(storeInput,storeInvalid);
+  setRequiredInvalid(weekInput,weekInvalid);
+  setRequiredInvalid(targetInput,targetInvalid);
+
+  if(storeInvalid)problems.push("Enter a valid store number.");
+  if(weekInvalid)problems.push("Enter a valid week number.");
+  if(targetInvalid)problems.push("Enter a valid prod target.");
+
+  if(mtd&&!Number.isFinite(Number(mtd)))problems.push("PROD MTD must be a number or left blank.");
+  if(ytd&&!Number.isFinite(Number(ytd)))problems.push("PROD YTD must be a number or left blank.");
+  if(cir&&!Number.isFinite(Number(cir)))problems.push("CIR must be a number or left blank.");
+  if(woWtd&&!Number.isFinite(Number(woWtd)))problems.push("W/O WTD must be a number or left blank.");
+
+  if(problems.length){
+    setupError.textContent=problems.join(" ");
+    setupError.classList.add("show");
+
+    const firstInvalid=
+      storeInvalid?storeInput:
+      weekInvalid?weekInput:
+      targetInvalid?targetInput:
+      null;
+
+    if(firstInvalid){
+      firstInvalid.focus({preventScroll:true});
+      firstInvalid.scrollIntoView({block:"center",behavior:"smooth"});
+    }
+
+    return false;
+  }
+
+  setupError.classList.remove("show");
+  setRequiredInvalid(storeInput,false);
+  setRequiredInvalid(weekInput,false);
+  setRequiredInvalid(targetInput,false);
+
+  state.store=store;
+  state.week=week;
+  state.target=target;
+  state.mtd=mtd;
+  state.ytd=ytd;
+  state.cir=cir;
+  state.woWtd=woWtd;
+  save();
+  return true;
+}
+
+function makeDayInputs(containerId,type,isActual=false){
+  const container=document.getElementById(containerId);
+  container.innerHTML="";
+
+  DAYS.forEach(day=>{
+    const row=document.createElement("div");
+    row.className="day-row";
+    row.dataset.day=day;
+
+    const lab=document.createElement("label");
+    const dayName=document.createElement("span");
+    dayName.className="entry-day-name";
+    dayName.textContent=day;
+
+    const dayDate=document.createElement("span");
+    dayDate.className="entry-day-date";
+    dayDate.dataset.dayIndex=String(DAYS.indexOf(day));
+    dayDate.textContent=dateForWeekDay(DAYS.indexOf(day));
+
+    lab.append(dayName,dayDate);
+
+    const inp=document.createElement("input");
+    inp.type="text";
+    inp.inputMode="decimal";
+    inp.autocomplete="off";
+    inp.placeholder="0";
+    inp.value=isUnitsType(type)
+      ?formatUnitsInput(state[type][day]||"")
+      :(state[type][day]||"");
+    inp.setAttribute("aria-label",`${day} ${type}`);
+
+    inp.addEventListener("focus",()=>{
+      if(isActual){
+        container.querySelectorAll(".day-row").forEach(r=>r.classList.remove("focus-day"));
+        row.classList.add("focus-day");
+      }
+    });
+
+    inp.addEventListener("input",()=>{
+      let v=inp.value.replace(/[^\d.]/g,"");
+      const first=v.indexOf(".");
+      if(first!==-1)v=v.slice(0,first+1)+v.slice(first+1).replace(/\./g,"");
+
+      if(isUnitsType(type)){
+        v=v.replace(/\./g,"");
+        state[type][day]=v;
+        inp.value=formatUnitsInput(v);
+      }else{
+        inp.value=v;
+        state[type][day]=v;
+      }
+
+      if(type==="planUnits"||type==="planHours"){
+        if(v!=="")state.hasStartedPlan=true;
+      }
+
+      save();
+      renderAllTotals();
+
+      if(isActual){
+        row.classList.toggle("completed",v!=="");
+        if(v==="")row.classList.add("focus-day");
+      }
+    });
+
+    row.append(lab,inp);
+    container.appendChild(row);
+  });
+
+  if(isActual)highlightNextActual(containerId,type);
+}
+
+function highlightNextActual(containerId,type){
+  const container=document.getElementById(containerId);
+  if(!container)return;
+
+  const next=firstBlankDay(state[type]);
+
+  container.querySelectorAll(".day-row").forEach(row=>{
+    const day=row.dataset.day;
+    const filled=String(state[type][day]??"").trim()!=="";
+    row.classList.toggle("completed",filled);
+    row.classList.toggle("focus-day",day===next);
+  });
+}
+
+function focusNextActual(containerId,type){
+  const container=document.getElementById(containerId);
+  if(!container)return;
+
+  const next=firstBlankDay(state[type]);
+  if(!next)return;
+
+  const row=[...container.querySelectorAll(".day-row")]
+    .find(r=>r.dataset.day===next);
+  if(!row)return;
+
+  const input=row.querySelector("input");
+  if(!input)return;
+
+  // Keep this synchronous when the user taps into Actual Units/Hours.
+  // On iPhone this gives the best chance of opening the number keyboard immediately.
+  input.focus({preventScroll:true});
+
+  requestAnimationFrame(()=>{
+    row.scrollIntoView({block:"center",behavior:"smooth"});
+  });
+}
+
+function renderAllTotals(){
+  const pu=total(state.planUnits);
+  const ph=total(state.planHours);
+  const au=total(state.actualUnits);
+  const ah=total(state.actualHours);
+
+  document.getElementById("planUnitsTotal").textContent=fmt(pu);
+  document.getElementById("planHoursTotal").textContent=fmt(ph,1);
+  document.getElementById("actualUnitsTotal").textContent=fmt(au);
+  document.getElementById("actualHoursTotal").textContent=fmt(ah,1);
+
+  document.getElementById("homePlanUnitsTotal").textContent=`Weekly total: ${fmt(pu)}`;
+  document.getElementById("homePlanHoursTotal").textContent=`Weekly total: ${fmt(ph,1)}`;
+  document.getElementById("homeActualUnitsTotal").textContent=`Weekly total: ${fmt(au)}`;
+  document.getElementById("homeActualHoursTotal").textContent=`Weekly total: ${fmt(ah,1)}`;
+}
+
+function renderHome(){
+  document.getElementById("homeWeek").textContent=state.week||"";
+
+  const nextUnits=firstBlankDay(state.actualUnits);
+  const nextHours=firstBlankDay(state.actualHours);
+
+  document.getElementById("homeActualUnitsStatus").textContent=
+    nextUnits?`Next: ${nextUnits}`:"Week complete ✓";
+
+  document.getElementById("homeActualHoursStatus").textContent=
+    nextHours?`Next: ${nextHours}`:"Week complete ✓";
+
+  document.getElementById("homeActualUnits").classList.toggle(
+    "complete",isWeekComplete(state.actualUnits)
+  );
+  document.getElementById("homeActualHours").classList.toggle(
+    "complete",isWeekComplete(state.actualHours)
+  );
+  document.getElementById("homePlanUnits").classList.toggle(
+    "complete",isWeekComplete(state.planUnits)
+  );
+  document.getElementById("homePlanHours").classList.toggle(
+    "complete",isWeekComplete(state.planHours)
+  );
+
+  const plannedUnits=total(state.planUnits);
+  const plannedHours=total(state.planHours);
+  const prodPlan=plannedHours>0?plannedUnits/plannedHours:null;
+
+  // Actual Prod uses days where both actual units and actual hours exist,
+  // so a missing side does not distort the figure.
+  const matchedActualDays=DAYS.filter(day=>
+    String(state.actualUnits[day]??"").trim()!=="" &&
+    String(state.actualHours[day]??"").trim()!==""
+  );
+  const matchedActualUnits=totalForDays(state.actualUnits,matchedActualDays);
+  const matchedActualHours=totalForDays(state.actualHours,matchedActualDays);
+  const prodActual=matchedActualHours>0?matchedActualUnits/matchedActualHours:null;
+
+  document.getElementById("homeProdPlan").textContent=
+    prodPlan===null?"—":fmt(prodPlan,1);
+
+  const actualProdEl=document.getElementById("homeProdActual");
+  actualProdEl.textContent=prodActual===null?"—":fmt(prodActual,1);
+
+  if(prodActual===null || !Number.isFinite(Number(state.target))){
+    actualProdEl.className="home-kpi-value neutral-value";
+  }else{
+    actualProdEl.className=
+      "home-kpi-value "+(prodActual>=num(state.target)?"good-value":"bad-value");
+  }
+
+  // Units difference compares actual units entered so far with plan for the
+  // exact same days. Positive units = good; negative = bad.
+  const unitsDays=enteredDays(state.actualUnits);
+  const actualUnitsWtd=totalForDays(state.actualUnits,unitsDays);
+  const plannedUnitsWtd=totalForDays(state.planUnits,unitsDays);
+  const unitsDiff=unitsDays.length?actualUnitsWtd-plannedUnitsWtd:null;
+
+  const unitsValue=document.getElementById("homeUnitsDiff");
+  const unitsSign=document.getElementById("unitsDiffSign");
+
+  if(unitsDiff===null){
+    unitsValue.textContent="—";
+    unitsValue.parentElement.className="home-kpi-value neutral-value";
+    unitsSign.textContent="±";
+    unitsSign.className="diff-sign neutral-sign";
+  }else{
+    unitsValue.textContent=fmt(Math.abs(unitsDiff));
+    const good=unitsDiff>=0;
+    unitsValue.parentElement.className="home-kpi-value "+(good?"good-value":"bad-value");
+    unitsSign.textContent=unitsDiff>=0?"+":"−";
+    unitsSign.className="diff-sign "+(good?"good-sign":"bad-sign");
+  }
+
+  // Hours difference compares actual hours entered so far with plan for the
+  // same days. Fewer hours than plan = good; more hours = bad.
+  const hoursDays=enteredDays(state.actualHours);
+  const actualHoursWtd=totalForDays(state.actualHours,hoursDays);
+  const plannedHoursWtd=totalForDays(state.planHours,hoursDays);
+  const hoursDiff=hoursDays.length?actualHoursWtd-plannedHoursWtd:null;
+
+  const hoursValue=document.getElementById("homeHoursDiff");
+  const hoursSign=document.getElementById("hoursDiffSign");
+
+  if(hoursDiff===null){
+    hoursValue.textContent="—";
+    hoursValue.parentElement.className="home-kpi-value neutral-value";
+    hoursSign.textContent="±";
+    hoursSign.className="diff-sign neutral-sign";
+  }else{
+    hoursValue.textContent=fmt(Math.abs(hoursDiff),1);
+    const good=hoursDiff<=0;
+    hoursValue.parentElement.className="home-kpi-value "+(good?"good-value":"bad-value");
+    hoursSign.textContent=hoursDiff>=0?"+":"−";
+    hoursSign.className="diff-sign "+(good?"good-sign":"bad-sign");
+  }
+}
+
+function updateSheet(){
+  const rows=document.getElementById("rows");
+  rows.innerHTML="";
+
+  let PU=0;
+  let PH=0;
+  let liveU=0;
+  let liveH=0;
+  let enteredU=0;
+  let enteredH=0;
+
+  DAYS.forEach((day,index)=>{
+    const puText=String(state.planUnits[day]??"").trim();
+    const auText=String(state.actualUnits[day]??"").trim();
+    const phText=String(state.planHours[day]??"").trim();
+    const ahText=String(state.actualHours[day]??"").trim();
+
+    const pu=num(puText);
+    const au=num(auText);
+    const ph=num(phText);
+    const ah=num(ahText);
+
+    PU+=pu;
+    PH+=ph;
+    liveU+=auText!==""?au:pu;
+    liveH+=ahText!==""?ah:ph;
+
+    if(auText!=="")enteredU++;
+    if(ahText!=="")enteredH++;
+
+    const pp=ph>0?pu/ph:null;
+    const ap=(auText!==""&&ahText!==""&&ah>0)?au/ah:null;
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td class="day" data-day-index="${index}">
+        <span class="day-name">${day}</span>
+      </td>
+      <td>${puText!==""?fmt(pu):""}</td>
+      <td class="actual-input">${auText!==""?fmt(au):""}</td>
+      <td>${phText!==""?fmt(ph,2):""}</td>
+      <td class="actual-input">${ahText!==""?fmt(ah,2):""}</td>
+      <td>${pp===null?"":fmt(pp,1)}</td>
+      <td>${ap===null?"":fmt(ap,1)}</td>`;
+    rows.appendChild(tr);
+  });
+
+  const unitDiff=liveU-PU;
+  const hourDiff=liveH-PH;
+  const weeklyPlanProd=(PU>0&&PH>0)?PU/PH:null;
+  const weeklyActualProd=((enteredU||enteredH)&&liveH>0)?liveU/liveH:null;
+
+  document.getElementById("planUnitsTotal").textContent=
+    PU?fmt(PU):"";
+
+  const unitDelta=document.getElementById("unitDelta");
+  unitDelta.textContent=
+    enteredU?`${unitDiff>=0?"+":""}${fmt(unitDiff)}`:"";
+  unitDelta.className=
+    "delta "+(enteredU?(unitDiff>=0?"good":"bad"):"");
+
+  document.getElementById("planHoursTotal").textContent=
+    PH?fmt(PH,2):"";
+
+  const hourDelta=document.getElementById("hourDelta");
+  hourDelta.textContent=
+    enteredH?`${hourDiff>=0?"+":""}${fmt(hourDiff,2)}`:"";
+  hourDelta.className=
+    "delta "+(enteredH?(hourDiff<=0?"good":"bad"):"");
+
+  document.getElementById("planProd").textContent=
+    weeklyPlanProd===null?"":fmt(weeklyPlanProd,1);
+
+  const actualProd=document.getElementById("actualProd");
+  actualProd.textContent=
+    weeklyActualProd===null?"":fmt(weeklyActualProd,1);
+  actualProd.style.color=
+    weeklyActualProd===null||weeklyPlanProd===null
+      ?""
+      :weeklyActualProd>weeklyPlanProd
+        ?"var(--green)"
+        :weeklyActualProd<weeklyPlanProd
+          ?"var(--red)"
+          :"";
+
+  document.getElementById("store").textContent=state.store;
+  document.getElementById("week").textContent=state.week;
+  document.getElementById("target").textContent=String(state.target??"").trim();
+
+  const cirSet=String(state.cir??"").trim()!=="";
+  const woSet=String(state.woWtd??"").trim()!=="";
+  const mtdSet=String(state.mtd??"").trim()!=="";
+  const ytdSet=String(state.ytd??"").trim()!=="";
+
+  const cirSlot=document.getElementById("cirSlot");
+  const woSlot=document.getElementById("woSlot");
+  cirSlot.classList.toggle("hidden",!cirSet);
+  woSlot.classList.toggle("hidden",!woSet);
+
+  document.getElementById("cir").textContent=cirSet?String(state.cir).trim():"";
+  document.getElementById("wo").textContent=woSet?String(state.woWtd).trim():"";
+
+  document.getElementById("kpiBottom").classList.toggle(
+    "legacy-enabled",cirSet||woSet
+  );
+
+  // Optional MTD/YTD values vanish if they were not supplied.
+  document.getElementById("mtdTitle").style.visibility=mtdSet?"visible":"hidden";
+  document.getElementById("mtdSlot").style.visibility=mtdSet?"visible":"hidden";
+  document.getElementById("ytdTitle").style.visibility=ytdSet?"visible":"hidden";
+  document.getElementById("ytdSlot").style.visibility=ytdSet?"visible":"hidden";
+  document.getElementById("mtd").textContent=mtdSet?String(state.mtd).trim():"";
+  document.getElementById("ytd").textContent=ytdSet?String(state.ytd).trim():"";
+
+  const target=num(state.target);
+  const hs=(target>0&&PU>0&&PH>0)?PH-(PU/target):null;
+
+  const hoursSave=document.getElementById("hoursSave");
+  hoursSave.textContent=
+    hs===null?"":`${hs>0?"+":""}${fmt(hs,1)}`;
+  hoursSave.style.color=
+    hs===null?"":(hs<=0?"var(--green)":"var(--red)");
+}
+
+function captureDraftSetupForOverview(){
+  if(!screens.setup.classList.contains("active"))return;
+  state.store=storeInput.value.trim()||state.store;
+  state.week=weekInput.value.trim()||state.week;
+  state.target=targetInput.value.trim()||state.target;
+  state.mtd=mtdInput.value.trim();
+  state.ytd=ytdInput.value.trim();
+  state.cir=cirInput.value.trim();
+  state.woWtd=woInput.value.trim();
+}
+
+function setOverviewLandscape(){
+  overviewModal.classList.toggle(
+    "force-landscape",
+    window.innerHeight>window.innerWidth
+  );
+}
+
+function closeOverviewNow(e){
+  if(e){
+    try{e.preventDefault()}catch(_){}
+    try{e.stopPropagation()}catch(_){}
+  }
+
+  overviewModal.classList.remove("show","force-landscape");
+  overviewModal.setAttribute("aria-hidden","true");
+  overviewImage.removeAttribute("src");
+  document.body.style.overflow="";
+}
+
+async function openOverview(){
+  captureDraftSetupForOverview();
+  updateSheet();
+
+  try{
+    if(typeof html2canvas!=="function"){
+      throw new Error("Screenshot tool did not load.");
+    }
+
+    const capture=document.getElementById("capture");
+    const canvas=await html2canvas(capture,{
+      scale:2,
+      backgroundColor:"#fff",
+      useCORS:true,
+      logging:false
+    });
+
+    overviewImage.src=canvas.toDataURL("image/png");
+    setOverviewLandscape();
+    overviewModal.classList.add("show");
+    overviewModal.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+    setOverviewLandscape();
+  }catch(e){
+    alert("Could not create the overview. Please try again.");
+  }
+}
+
+async function publishSpreadsheet(){
+  captureDraftSetupForOverview();
+  updateSheet();
+
+  try{
+    if(typeof html2canvas!=="function"){
+      throw new Error("Screenshot tool did not load.");
+    }
+
+    const capture=document.getElementById("capture");
+    const canvas=await html2canvas(capture,{
+      backgroundColor:"#ffffff",
+      scale:2,
+      useCORS:true,
+      logging:false
+    });
+
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png",1));
+    if(!blob)throw new Error("Could not create spreadsheet image.");
+
+    const fileName=`KPI-${state.store||"Store"}-W${state.week||"Week"}.png`;
+    const file=new File([blob],fileName,{type:"image/png"});
+
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({
+        files:[file],
+        title:`KPI Store ${state.store} Week ${state.week}`
+      });
+    }else{
+      throw new Error("Sharing files is not supported in this browser.");
+    }
+  }catch(err){
+    if(err&&err.name!=="AbortError"){
+      alert(err?.message||"Could not open the share sheet.");
+    }
+  }
+}
+
+
+/* Screenshot import: Import button + triple-tap on Planned Units / Hours titles */
+const planUnitsTitle=document.getElementById("planUnitsTitle"),
+      planHoursTitle=document.getElementById("planHoursTitle"),
+      planImportModal=document.getElementById("planImportModal"),
+      planImportClose=document.getElementById("planImportClose"),
+      planImportTitle=document.getElementById("planImportTitle"),
+      importImageInput=document.getElementById("importImageInput"),
+      importPreview=document.getElementById("importPreview"),
+      importReadBtn=document.getElementById("importReadBtn"),
+      importProgress=document.getElementById("importProgress"),
+      importConfirmWrap=document.getElementById("importConfirmWrap"),
+      importConfirmBtn=document.getElementById("importConfirmBtn"),
+      importCancelBtn=document.getElementById("importCancelBtn"),
+      importUnitInputs=[...document.querySelectorAll(".import-unit")],
+      importHourInputs=[...document.querySelectorAll(".import-hour")];
+
+let planImportFocus="units";
+let planImportObjectUrl="";
+
+function openPlanImport(focus){
+  planImportFocus=focus==="hours"?"hours":"units";
+  planImportTitle.textContent=
+    planImportFocus==="hours"
+      ?"Import Planned Hours"
+      :"Import Planned Units";
+
+  importProgress.textContent="";
+  importConfirmWrap.classList.remove("show");
+  importImageInput.value="";
+
+  if(planImportObjectUrl){
+    URL.revokeObjectURL(planImportObjectUrl);
+    planImportObjectUrl="";
+  }
+
+  importPreview.removeAttribute("src");
+  importPreview.classList.remove("show");
+
+  importUnitInputs.forEach(i=>i.value="");
+  importHourInputs.forEach(i=>i.value="");
+
+  planImportModal.classList.add("show");
+  planImportModal.setAttribute("aria-hidden","false");
+}
+
+function closePlanImport(){
+  planImportModal.classList.remove("show");
+  planImportModal.setAttribute("aria-hidden","true");
+  importProgress.textContent="";
+}
+
+planImportClose.onclick=closePlanImport;
+importCancelBtn.onclick=closePlanImport;
+
+document.getElementById("planUnitsImport").onclick=()=>openPlanImport("units");
+document.getElementById("planHoursImport").onclick=()=>openPlanImport("hours");
+
+importImageInput.addEventListener("change",()=>{
+  const file=importImageInput.files?.[0];
+  if(!file){
+    importPreview.removeAttribute("src");
+    importPreview.classList.remove("show");
+    return;
+  }
+
+  if(planImportObjectUrl)URL.revokeObjectURL(planImportObjectUrl);
+  planImportObjectUrl=URL.createObjectURL(file);
+  importPreview.src=planImportObjectUrl;
+  importPreview.classList.add("show");
+  importProgress.textContent="Ready to read. Tap “Read Screenshot”.";
+  importConfirmWrap.classList.remove("show");
+});
+
+/* ---- Cell-by-cell OCR helpers ---- */
+
+function loadPlanImage(file){
+  return new Promise((resolve,reject)=>{
+    const url=URL.createObjectURL(file);
+    const img=new Image();
+
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+
+    img.onerror=()=>{
+      URL.revokeObjectURL(url);
+      reject(new Error("Could not open that image."));
+    };
+
+    img.src=url;
+  });
+}
+
+function wordCenterX(w){
+  return ((w?.bbox?.x0??0)+(w?.bbox?.x1??0))/2;
+}
+
+function wordCenterY(w){
+  return ((w?.bbox?.y0??0)+(w?.bbox?.y1??0))/2;
+}
+
+function median(values){
+  if(!values.length)return null;
+  const sorted=values.slice().sort((a,b)=>a-b);
+  const mid=Math.floor(sorted.length/2);
+  return sorted.length%2
+    ? sorted[mid]
+    : (sorted[mid-1]+sorted[mid])/2;
+}
+
+function normaliseOcrText(text){
+  return String(text??"")
+    .trim()
+    .replace(/[OoQ]/g,"0")
+    .replace(/[Il|!]/g,"1")
+    .replace(/[Ss]/g,"5")
+    .replace(/[Bb]/g,"8")
+    .replace(/[Zz]/g,"2");
+}
+
+function numericToken(text){
+  const cleaned=normaliseOcrText(text);
+  const parts=cleaned.match(/[\d][\d,.\s]*/g)||[];
+  if(!parts.length)return "";
+
+  // In a single cropped cell the token with the most digits is the wanted one.
+  return parts
+    .sort((a,b)=>
+      b.replace(/\D/g,"").length-a.replace(/\D/g,"").length
+    )[0]
+    .replace(/\s+/g,"");
+}
+
+function parseUnitCell(text,totalCell=false){
+  let token=numericToken(text);
+  if(!token)return null;
+
+  token=token.replace(/[,.]/g,"");
+  if(!/^\d+$/.test(token))return null;
+
+  const n=Number(token);
+  if(!Number.isFinite(n))return null;
+
+  if(totalCell){
+    return (n>=20000&&n<=1000000)?Math.round(n):null;
+  }
+
+  return (n>=3000&&n<=250000)?Math.round(n):null;
+}
+
+function parseHourCell(text,totalCell=false){
+  let token=numericToken(text);
+  if(!token)return null;
+
+  token=token.replace(/,/g,"");
+  const hadPoint=token.includes(".");
+  token=token.replace(/[^\d.]/g,"");
+
+  if(!token)return null;
+
+  let n=Number(token);
+  if(!Number.isFinite(n))return null;
+
+  // Monitor photographs often make the decimal point disappear.
+  // Convert values such as 11425 -> 114.25 and 955 -> 95.5.
+  if(!hadPoint){
+    if(totalCell){
+      if(n>5000&&n<200000)n=n/100;
+      else if(n>2000&&n<=5000)n=n/10;
+    }else{
+      if(n>3000&&n<50000)n=n/100;
+      else if(n>300&&n<=3000)n=n/10;
+    }
+  }
+
+  if(totalCell){
+    return (n>=100&&n<=2500)?n:null;
+  }
+
+  return (n>=20&&n<=350)?n:null;
+}
+
+function findBlueTotalBand(img){
+  // Scan a downscaled copy. The blue total band spans almost the whole table
+  // and is a much more reliable anchor than OCR on a photographed monitor.
+  const sourceW=img.naturalWidth||img.width;
+  const sourceH=img.naturalHeight||img.height;
+
+  const scanW=Math.min(900,sourceW);
+  const scale=scanW/sourceW;
+  const scanH=Math.max(1,Math.round(sourceH*scale));
+
+  const canvas=document.createElement("canvas");
+  canvas.width=scanW;
+  canvas.height=scanH;
+
+  const ctx=canvas.getContext("2d",{willReadFrequently:true});
+  ctx.drawImage(img,0,0,scanW,scanH);
+
+  const data=ctx.getImageData(0,0,scanW,scanH).data;
+  const x0=Math.round(scanW*.05);
+  const x1=Math.round(scanW*.95);
+  const y0=Math.round(scanH*.25);
+  const y1=Math.round(scanH*.78);
+
+  const scores=[];
+  let peakScore=-1;
+  let peakY=y0;
+
+  for(let y=y0;y<y1;y++){
+    let blue=0;
+    let count=0;
+
+    // Sampling every third pixel keeps this fast on iPhone.
+    for(let x=x0;x<x1;x+=3){
+      const idx=(y*scanW+x)*4;
+      const r=data[idx];
+      const g=data[idx+1];
+      const b=data[idx+2];
+
+      if(
+        b-r>22 &&
+        b-g>8 &&
+        b>95 &&
+        g>75
+      ){
+        blue++;
+      }
+      count++;
+    }
+
+    const score=count?blue/count:0;
+    scores[y]=score;
+
+    if(score>peakScore){
+      peakScore=score;
+      peakY=y;
+    }
+  }
+
+  if(peakScore<.25)return null;
+
+  // Expand from the strongest blue row to get the full band.
+  const threshold=Math.max(.30,peakScore*.42);
+  let top=peakY;
+  let bottom=peakY;
+
+  while(top>y0 && (scores[top-1]??0)>threshold)top--;
+  while(bottom<y1-1 && (scores[bottom+1]??0)>threshold)bottom++;
+
+  const centre=(top+bottom)/2/scale;
+  const height=(bottom-top+1)/scale;
+
+  return {
+    centre,
+    height,
+    top:top/scale,
+    bottom:bottom/scale
+  };
+}
+
+function makeFullOcrCanvas(img){
+  // Light descreening: shrink the monitor photograph and enlarge it again.
+  // This suppresses the LCD pixel/moire pattern while preserving table layout.
+  const w=img.naturalWidth||img.width;
+  const h=img.naturalHeight||img.height;
+
+  const shrink=.58;
+
+  const small=document.createElement("canvas");
+  small.width=Math.max(1,Math.round(w*shrink));
+  small.height=Math.max(1,Math.round(h*shrink));
+
+  const sctx=small.getContext("2d");
+  sctx.imageSmoothingEnabled=true;
+  sctx.imageSmoothingQuality="high";
+  sctx.drawImage(img,0,0,small.width,small.height);
+
+  const out=document.createElement("canvas");
+  out.width=w;
+  out.height=h;
+
+  const ctx=out.getContext("2d");
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality="high";
+  ctx.drawImage(small,0,0,w,h);
+
+  return out;
+}
+
+function findManagerAdjustX(words,imageWidth){
+  const hits=words.filter(w=>{
+    const t=String(w.text??"").toLowerCase();
+    return (
+      t.includes("manager") ||
+      t.includes("adjust") ||
+      t.includes("anager") ||
+      t==="mgr"
+    );
+  });
+
+  if(hits.length){
+    const xs=hits.map(wordCenterX).filter(Number.isFinite);
+    const x=median(xs);
+    if(Number.isFinite(x))return x;
+  }
+
+  // Stable fallback for the Lidl weekly-plan layout.
+  return imageWidth*.36;
+}
+
+function estimateRowHeight(words,managerX,imageWidth,imageHeight,blueBand){
+  // OCR does not need to read the numbers correctly here; numeric fragments
+  // still give reliable Y positions for estimating the row spacing.
+  const tolerance=imageWidth*.12;
+
+  const numericYs=words
+    .filter(w=>/\d/.test(String(w.text??"")))
+    .filter(w=>Math.abs(wordCenterX(w)-managerX)<=tolerance)
+    .map(wordCenterY)
+    .filter(y=>
+      Number.isFinite(y) &&
+      y>blueBand.centre-imageHeight*.42 &&
+      y<blueBand.centre+imageHeight*.35
+    )
+    .sort((a,b)=>a-b);
+
+  // Merge fragments that belong to the same row.
+  const clusterGap=Math.max(8,imageHeight*.008);
+  const clusters=[];
+
+  numericYs.forEach(y=>{
+    const last=clusters[clusters.length-1];
+
+    if(!last || Math.abs(y-last.mean)>clusterGap){
+      clusters.push({values:[y],mean:y});
+    }else{
+      last.values.push(y);
+      last.mean=last.values.reduce((a,b)=>a+b,0)/last.values.length;
+    }
+  });
+
+  const ys=clusters.map(c=>c.mean);
+  const minGap=imageHeight*.022;
+  const maxGap=imageHeight*.060;
+
+  const gaps=[];
+  for(let i=1;i<ys.length;i++){
+    const d=ys[i]-ys[i-1];
+    if(d>=minGap&&d<=maxGap)gaps.push(d);
+  }
+
+  const fromOcr=median(gaps);
+
+  if(
+    Number.isFinite(fromOcr) &&
+    fromOcr>=minGap &&
+    fromOcr<=maxGap
+  ){
+    return fromOcr;
+  }
+
+  // The blue total band is approximately one normal table row high.
+  if(
+    blueBand.height>=imageHeight*.020 &&
+    blueBand.height<=imageHeight*.065
+  ){
+    return blueBand.height;
+  }
+
+  return imageHeight*.037;
+}
+
+function otsuThreshold(gray){
+  const hist=new Array(256).fill(0);
+
+  for(let i=0;i<gray.length;i++)hist[gray[i]]++;
+
+  let total=gray.length;
+  let sum=0;
+
+  for(let i=0;i<256;i++)sum+=i*hist[i];
+
+  let sumB=0;
+  let wB=0;
+  let maxVariance=-1;
+  let threshold=128;
+
+  for(let t=0;t<256;t++){
+    wB+=hist[t];
+    if(wB===0)continue;
+
+    const wF=total-wB;
+    if(wF===0)break;
+
+    sumB+=t*hist[t];
+
+    const mB=sumB/wB;
+    const mF=(sum-sumB)/wF;
+    const variance=wB*wF*(mB-mF)*(mB-mF);
+
+    if(variance>maxVariance){
+      maxVariance=variance;
+      threshold=t;
+    }
+  }
+
+  return threshold;
+}
+
+function makeCellCanvas(img,cx,cy,rowHeight,variant){
+  const imageWidth=img.naturalWidth||img.width;
+  const imageHeight=img.naturalHeight||img.height;
+
+  const cropWidth=Math.max(rowHeight*2.55,imageWidth*.095);
+  const cropHeight=rowHeight*.72;
+
+  const sx=Math.max(0,Math.round(cx-cropWidth/2));
+  const sy=Math.max(0,Math.round(cy-cropHeight/2));
+  const sw=Math.min(imageWidth-sx,Math.round(cropWidth));
+  const sh=Math.min(imageHeight-sy,Math.round(cropHeight));
+
+  // First shrink a little to suppress monitor pixel structure.
+  const small=document.createElement("canvas");
+  small.width=Math.max(1,Math.round(sw*.60));
+  small.height=Math.max(1,Math.round(sh*.60));
+
+  const sctx=small.getContext("2d");
+  sctx.imageSmoothingEnabled=true;
+  sctx.imageSmoothingQuality="high";
+  sctx.drawImage(img,sx,sy,sw,sh,0,0,small.width,small.height);
+
+  // Then enlarge strongly for Tesseract.
+  const scale=4;
+  const out=document.createElement("canvas");
+  out.width=Math.max(1,Math.round(sw*scale));
+  out.height=Math.max(1,Math.round(sh*scale));
+
+  const ctx=out.getContext("2d",{willReadFrequently:true});
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality="high";
+  ctx.drawImage(small,0,0,out.width,out.height);
+
+  const imageData=ctx.getImageData(0,0,out.width,out.height);
+  const d=imageData.data;
+  const gray=new Uint8Array(out.width*out.height);
+
+  for(let p=0,i=0;p<d.length;p+=4,i++){
+    let g=.299*d[p]+.587*d[p+1]+.114*d[p+2];
+
+    // Mild contrast stretch.
+    g=(g-128)*1.55+128;
+    g=Math.max(0,Math.min(255,g));
+
+    gray[i]=g;
+  }
+
+  if(variant==="binary"){
+    const t=otsuThreshold(gray);
+
+    for(let p=0,i=0;p<d.length;p+=4,i++){
+      const v=gray[i]<t?0:255;
+      d[p]=d[p+1]=d[p+2]=v;
+      d[p+3]=255;
+    }
+  }else{
+    for(let p=0,i=0;p<d.length;p+=4,i++){
+      const v=gray[i];
+      d[p]=d[p+1]=d[p+2]=v;
+      d[p+3]=255;
+    }
+  }
+
+  ctx.putImageData(imageData,0,0);
+  return out;
+}
+
+function recognitionConfidence(result){
+  const direct=Number(result?.data?.confidence);
+  if(Number.isFinite(direct))return direct;
+
+  const words=result?.data?.words||[];
+  const vals=words
+    .map(w=>Number(w.confidence??w.conf))
+    .filter(Number.isFinite);
+
+  return vals.length
+    ?vals.reduce((a,b)=>a+b,0)/vals.length
+    :0;
+}
+
+async function readCellCandidates(worker,img,cx,cy,rowHeight,kind,totalCell=false){
+  const candidates=[];
+
+  for(const variant of ["soft","binary"]){
+    const canvas=makeCellCanvas(img,cx,cy,rowHeight,variant);
+
+    const result=await worker.recognize(canvas);
+    const raw=String(result?.data?.text??"").trim();
+
+    const value=
+      kind==="units"
+        ?parseUnitCell(raw,totalCell)
+        :parseHourCell(raw,totalCell);
+
+    if(value===null)continue;
+
+    const conf=recognitionConfidence(result);
+
+    const existing=candidates.find(c=>Math.abs(c.value-value)<.001);
+
+    if(existing){
+      existing.conf=Math.max(existing.conf,conf);
+      existing.raw+=" | "+raw;
+    }else{
+      candidates.push({value,conf,raw,variant});
+    }
+  }
+
+  return candidates
+    .sort((a,b)=>b.conf-a.conf)
+    .slice(0,2);
+}
+
+function chooseSeriesFromTotals(dayCandidates,totalCandidates,kind){
+  const totalOptions=totalCandidates.length
+    ?totalCandidates.slice(0,2)
+    :[{value:null,conf:0}];
+
+  let combos=[{
+    values:[],
+    conf:0,
+    missing:0
+  }];
+
+  dayCandidates.forEach(list=>{
+    const options=list.length
+      ?list.slice(0,2)
+      :[{value:null,conf:0}];
+
+    const next=[];
+
+    combos.forEach(base=>{
+      options.forEach(option=>{
+        next.push({
+          values:[...base.values,option.value],
+          conf:base.conf+(option.conf||0),
+          missing:base.missing+(option.value===null?1:0)
+        });
+      });
+    });
+
+    // 2^7 is already tiny; cap defensively.
+    combos=next.slice(0,256);
+  });
+
+  let best=null;
+
+  totalOptions.forEach(totalOpt=>{
+    combos.forEach(combo=>{
+      const present=combo.values.filter(v=>v!==null);
+      if(!present.length)return;
+
+      const sum=present.reduce((a,b)=>a+b,0);
+
+      let error=0;
+
+      if(totalOpt.value!==null && combo.missing===0){
+        error=Math.abs(sum-totalOpt.value)/Math.max(Math.abs(totalOpt.value),1);
+      }else if(totalOpt.value!==null){
+        // Missing cells cannot be verified by the total yet.
+        error=.15+combo.missing*.08;
+      }else{
+        error=.25+combo.missing*.08;
+      }
+
+      // Total agreement dominates. Confidence breaks close ties.
+      const avgConf=combo.conf/7;
+      const score=(error*1000)-(avgConf*.35)-(totalOpt.conf*.10);
+
+      if(!best||score<best.score){
+        best={
+          values:combo.values,
+          total:totalOpt.value,
+          error,
+          score
+        };
+      }
+    });
+  });
+
+  return best||{
+    values:new Array(7).fill(null),
+    total:null,
+    error:1,
+    score:9999
+  };
+}
+
+function formatImportedHour(value){
+  if(value===null||value===undefined)return "";
+
+  // The source system uses quarter-hour values.
+  const rounded=Math.round(value*4)/4;
+  return rounded.toFixed(2);
+}
+
+function applyCellImportResult(unitsResult,hoursResult){
+  importUnitInputs.forEach((input,index)=>{
+    const value=unitsResult.values[index];
+
+    input.value=value===null||value===undefined
+      ?""
+      :Math.round(value).toLocaleString("en-GB");
+
+    input.classList.toggle(
+      "import-check",
+      value===null||value===undefined||unitsResult.error>.06
+    );
+  });
+
+  importHourInputs.forEach((input,index)=>{
+    const value=hoursResult.values[index];
+
+    input.value=value===null||value===undefined
+      ?""
+      :formatImportedHour(value);
+
+    input.classList.toggle(
+      "import-check",
+      value===null||value===undefined||hoursResult.error>.06
+    );
+  });
+
+  importConfirmWrap.classList.add("show");
+
+  const unitsGood=
+    unitsResult.values.every(v=>v!==null) &&
+    unitsResult.total!==null &&
+    unitsResult.error<=.035;
+
+  const hoursGood=
+    hoursResult.values.every(v=>v!==null) &&
+    hoursResult.total!==null &&
+    hoursResult.error<=.035;
+
+  if(unitsGood&&hoursGood){
+    importProgress.textContent=
+      `Verified against Manager Adjust totals — Units ${Math.round(unitsResult.total).toLocaleString("en-GB")} • Hours ${formatImportedHour(hoursResult.total)}. Check, then confirm.`;
+    return;
+  }
+
+  if(unitsGood){
+    importProgress.textContent=
+      "Units verified against the Manager Adjust total. Check the red Hours boxes before importing.";
+    return;
+  }
+
+  if(hoursGood){
+    importProgress.textContent=
+      "Hours verified against the Manager Adjust total. Check the red Units boxes before importing.";
+    return;
+  }
+
+  importProgress.textContent=
+    "The app isolated the Manager Adjust cells, but some figures did not match the weekly totals. Check the red boxes before importing.";
+}
+
+[...importUnitInputs,...importHourInputs].forEach(input=>{
+  input.addEventListener("input",()=>{
+    input.classList.toggle("import-check",input.value.trim()==="");
+  });
+});
+
+importReadBtn.onclick=async()=>{
+  const file=importImageInput.files?.[0];
+
+  if(!file){
+    importProgress.textContent="Choose a screenshot first.";
+    return;
+  }
+
+  if(typeof Tesseract==="undefined"){
+    importProgress.textContent=
+      "Screenshot reader failed to load. Check your connection.";
+    return;
+  }
+
+  importReadBtn.disabled=true;
+  importConfirmWrap.classList.remove("show");
+  importProgress.textContent="Finding the table…";
+
+  let worker=null;
+
+  try{
+    const img=await loadPlanImage(file);
+    const imageWidth=img.naturalWidth||img.width;
+    const imageHeight=img.naturalHeight||img.height;
+
+    const blueBand=findBlueTotalBand(img);
+
+    if(!blueBand){
+      throw new Error("Could not find the blue weekly-total row.");
+    }
+
+    worker=await Tesseract.createWorker(
+      "eng",
+      1,
+      {
+        logger:m=>{
+          if(
+            m.status==="recognizing text" &&
+            Number.isFinite(m.progress) &&
+            !importConfirmWrap.classList.contains("show")
+          ){
+            // Keep progress useful but not jumpy during the 16 small-cell reads.
+            const pct=Math.round(m.progress*100);
+            if(pct>0)importProgress.textContent=`Reading table… ${pct}%`;
+          }
+        }
+      }
+    );
+
+    // One broad pass is used only for geometry (Manager Adjust X + row spacing).
+    await worker.setParameters({
+      tessedit_pageseg_mode:"11",
+      preserve_interword_spaces:"1"
+    });
+
+    const fullCanvas=makeFullOcrCanvas(img);
+    const fullResult=await worker.recognize(fullCanvas);
+    const words=fullResult?.data?.words||[];
+
+    const managerX=findManagerAdjustX(words,imageWidth);
+    const rowHeight=estimateRowHeight(
+      words,
+      managerX,
+      imageWidth,
+      imageHeight,
+      blueBand
+    );
+
+    if(
+      !Number.isFinite(rowHeight) ||
+      rowHeight<imageHeight*.018 ||
+      rowHeight>imageHeight*.070
+    ){
+      throw new Error("Could not determine the table row spacing.");
+    }
+
+    // Switch to strict single-cell OCR.
+    await worker.setParameters({
+      tessedit_pageseg_mode:"7",
+      tessedit_char_whitelist:"0123456789.,",
+      preserve_interword_spaces:"0"
+    });
+
+    const unitTotalY=blueBand.centre-(8*rowHeight);
+    const hourTotalY=blueBand.centre;
+
+    const unitYs=DAYS.map((_,index)=>
+      blueBand.centre-((7-index)*rowHeight)
+    );
+
+    const hourYs=DAYS.map((_,index)=>
+      blueBand.centre+((index+1)*rowHeight)
+    );
+
+    importProgress.textContent="Reading Manager Adjust Units…";
+
+    const unitTotalCandidates=await readCellCandidates(
+      worker,
+      img,
+      managerX,
+      unitTotalY,
+      rowHeight,
+      "units",
+      true
+    );
+
+    const unitDayCandidates=[];
+
+    for(let i=0;i<7;i++){
+      importProgress.textContent=
+        `Reading Manager Adjust Units… ${i+1}/7`;
+
+      unitDayCandidates.push(
+        await readCellCandidates(
+          worker,
+          img,
+          managerX,
+          unitYs[i],
+          rowHeight,
+          "units",
+          false
+        )
+      );
+    }
+
+    importProgress.textContent="Reading Manager Adjust Hours…";
+
+    const hourTotalCandidates=await readCellCandidates(
+      worker,
+      img,
+      managerX,
+      hourTotalY,
+      rowHeight,
+      "hours",
+      true
+    );
+
+    const hourDayCandidates=[];
+
+    for(let i=0;i<7;i++){
+      importProgress.textContent=
+        `Reading Manager Adjust Hours… ${i+1}/7`;
+
+      hourDayCandidates.push(
+        await readCellCandidates(
+          worker,
+          img,
+          managerX,
+          hourYs[i],
+          rowHeight,
+          "hours",
+          false
+        )
+      );
+    }
+
+    const unitsResult=chooseSeriesFromTotals(
+      unitDayCandidates,
+      unitTotalCandidates,
+      "units"
+    );
+
+    const hoursResult=chooseSeriesFromTotals(
+      hourDayCandidates,
+      hourTotalCandidates,
+      "hours"
+    );
+
+    applyCellImportResult(unitsResult,hoursResult);
+
+  }catch(err){
+    console.error(err);
+
+    importProgress.textContent=
+      err?.message
+        ?`${err.message} You can still enter the figures below manually.`
+        :"Could not read the table. You can enter the figures below manually.";
+
+    importConfirmWrap.classList.add("show");
+
+    [...importUnitInputs,...importHourInputs].forEach(input=>{
+      input.classList.add("import-check");
+    });
+
+  }finally{
+    if(worker){
+      try{await worker.terminate()}catch(_){}
+    }
+    importReadBtn.disabled=false;
+  }
+};
+
+function rawUnitsFromImport(v){
+  return String(v??"").replace(/[^\d]/g,"");
+}
+
+function rawHoursFromImport(v){
+  const cleaned=String(v??"").replace(/[^\d.]/g,"");
+  const n=Number(cleaned);
+  return Number.isFinite(n)&&cleaned!==""?String(n):"";
+}
+
+importConfirmBtn.onclick=()=>{
+  importUnitInputs.forEach(input=>{
+    const day=input.dataset.day;
+    state.planUnits[day]=rawUnitsFromImport(input.value);
+  });
+
+  importHourInputs.forEach(input=>{
+    const day=input.dataset.day;
+    state.planHours[day]=rawHoursFromImport(input.value);
+  });
+
+  state.hasStartedPlan=
+    DAYS.some(day=>String(state.planUnits[day]??"").trim()!=="") ||
+    DAYS.some(day=>String(state.planHours[day]??"").trim()!=="");
+
+  save();
+
+  makeDayInputs("planUnitsDays","planUnits");
+  makeDayInputs("planHoursDays","planHours");
+  renderAllTotals();
+  renderHome();
+
+  closePlanImport();
+
+  showScreen(
+    planImportFocus==="hours"
+      ?"planHours"
+      :"planUnits"
+  );
+};
+
+function addTripleTapImport(el,focus){
+  let taps=0;
+  let timer=null;
+
+  el.addEventListener("pointerup",e=>{
+    if(e.pointerType==="mouse"&&e.button!==0)return;
+
+    taps++;
+    clearTimeout(timer);
+
+    if(taps>=3){
+      taps=0;
+      openPlanImport(focus);
+    }else{
+      timer=setTimeout(()=>{
+        taps=0;
+      },700);
+    }
+  });
+}
+
+addTripleTapImport(planUnitsTitle,"units");
+addTripleTapImport(planHoursTitle,"hours");
+
+
+/* Setup */
+
+[storeInput,weekInput,targetInput].forEach(input=>{
+  input.addEventListener("input",()=>{
+    input.classList.remove("required-invalid");
+    if(
+      !storeInput.classList.contains("required-invalid") &&
+      !weekInput.classList.contains("required-invalid") &&
+      !targetInput.classList.contains("required-invalid")
+    ){
+      setupError.classList.remove("show");
+    }
+  });
+});
+
+document.getElementById("setupDone").onclick=()=>{
+  if(!validateSetup())return;
+
+  // First ever setup takes the user straight into the planned figures.
+  // Once any plan has been entered, returning to the app goes to Home.
+  if(state.hasStartedPlan){
+    showScreen("home");
+  }else{
+    showScreen("planUnits");
+  }
+};
+
+/* Home */
+document.getElementById("homeActualUnits").onclick=()=>showScreen("actualUnits");
+document.getElementById("homeActualHours").onclick=()=>showScreen("actualHours");
+document.getElementById("homePlanUnits").onclick=()=>showScreen("planUnits");
+document.getElementById("homePlanHours").onclick=()=>showScreen("planHours");
+document.getElementById("homeOverview").onclick=openOverview;
+document.getElementById("homePublish").onclick=publishSpreadsheet;
+document.getElementById("editSetup").onclick=()=>{
+  syncSetup();
+  showScreen("setup");
+};
+
+/* Planned */
+document.getElementById("planUnitsDone").onclick=()=>showScreen("home");
+document.getElementById("toPlanHours").onclick=()=>showScreen("planHours");
+document.getElementById("toPlanUnits").onclick=()=>showScreen("planUnits");
+document.getElementById("planHoursDone").onclick=()=>showScreen("home");
+
+/* Actual */
+document.getElementById("actualUnitsDone").onclick=()=>showScreen("home");
+document.getElementById("toActualHours").onclick=()=>showScreen("actualHours");
+document.getElementById("toActualUnits").onclick=()=>showScreen("actualUnits");
+document.getElementById("actualHoursDone").onclick=()=>showScreen("home");
+
+/* Shared navigation */
+document.querySelectorAll("[data-home]").forEach(btn=>{
+  btn.onclick=()=>showScreen("home");
+});
+
+topOverview.onclick=openOverview;
+overviewClose.onclick=closeOverviewNow;
+window.addEventListener("resize",()=>{
+  if(overviewModal.classList.contains("show"))setOverviewLandscape();
+});
+
+function resetApp(){
+  if(!confirm("Reset everything and start again?"))return;
+
+  localStorage.removeItem("prodAppV3");
+  localStorage.removeItem("prodAppV2");
+
+  state.store="";
+  state.week="";
+  state.target="";
+  state.mtd="";
+  state.ytd="";
+  state.cir="";
+  state.woWtd="";
+  state.planUnits=blankDays();
+  state.planHours=blankDays();
+  state.actualUnits=blankDays();
+  state.actualHours=blankDays();
+  state.hasStartedPlan=false;
+  state.step="setup";
+
+  syncSetup();
+
+  makeDayInputs("planUnitsDays","planUnits");
+  makeDayInputs("planHoursDays","planHours");
+  makeDayInputs("actualUnitsDays","actualUnits",true);
+  makeDayInputs("actualHoursDays","actualHours",true);
+
+  renderAllTotals();
+  closeOverviewNow();
+  showScreen("setup");
+}
+document.getElementById("homeReset").onclick=resetApp;
+
+/* Start */
+load();
+syncSetup();
+
+makeDayInputs("planUnitsDays","planUnits");
+makeDayInputs("planHoursDays","planHours");
+makeDayInputs("actualUnitsDays","actualUnits",true);
+makeDayInputs("actualHoursDays","actualHours",true);
+
+renderTop();
+renderAllTotals();
+
+if(state.store&&state.week&&state.target){
+  // Once a plan has ever been entered, the app always opens at Home.
+  if(state.hasStartedPlan){
+    showScreen("home");
+  }else if(["planUnits","planHours"].includes(state.step)){
+    showScreen(state.step);
+  }else{
+    showScreen("planUnits");
+  }
+}else{
+  showScreen("setup");
+}
+</script>
+</body>
+</html>
